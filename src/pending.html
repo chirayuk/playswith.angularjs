@@ -1,0 +1,15 @@
+{% extends "src/base.html" %}
+
+{% block main_content %}
+  <div ng-controller="pendingProjectsController">
+    <h1>Pending Projects</h1>
+    <div ng-repeat="project in projects">
+        <div>
+          <div project-info-small project="project"></div>
+          <button ng-click="approve(project)">Approve Project</button>
+      </div>
+    </div>
+    <br>
+    <b>Status:</b> {{ status_text }}
+  </div>
+{% endblock %}

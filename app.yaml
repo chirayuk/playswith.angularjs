@@ -1,0 +1,71 @@
+application: playswith-angularjs
+version: 1
+runtime: python27
+threadsafe: true
+api_version: 1
+
+
+libraries:
+- name: jinja2
+  version: latest
+- name: markupsafe
+  version: latest
+- name: webapp2
+  version: latest
+
+
+builtins:
+- appstats: on         # Enables Appstats at /_ah/stats/ when you enable the event recorder
+- default: on
+- deferred: on         # Enables the deferred handler at /_ah/queue/deferred.
+- remote_api: on       # Enables the remote_api builtin at /_ah/remote_api/
+
+
+handlers:
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+- url: /img
+  static_dir: static/img
+
+- url: /static
+  static_dir: static
+
+- url: /rpc/.*
+  script: rpc.app
+
+- url: /create
+  static_files: static/create_project.html
+  upload: static/create_project.html
+
+- url: /pending
+  static_files: static/pending.html
+  upload: static/pending.html
+
+- url: /
+  static_files: index.html
+  upload: index.html
+
+- url: /.*
+  script: wsgi_app.wsgi_app
+
+
+# https://developers.google.com/appengine/docs/python/config/appconfig#Skipping_Files
+skip_files:
+- ^(.*/)?app\.yaml     # Default.
+- ^(.*/)?app\.yml      # Default.
+- ^(.*/)?index\.yaml   # Default.
+- ^(.*/)?index\.yml    # Default.
+- ^(.*/)?#.*#          # Default.
+- ^(.*/)?.*~           # Default.
+- ^(.*/)?.*\.py[co]    # Default.  .pyc files are skipped.
+- ^(.*/)?.*/RCS/.*     # Default.
+- ^(.*/)?\..*          # Default.
+- ^templates/.*
+- ^build
+- ^src/.*

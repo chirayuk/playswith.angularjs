@@ -1,0 +1,14 @@
+{% extends "src/base.html" %}
+
+{% block main_content %}
+<div ng-controller="submitNewProjectController">
+  <h1>Create a new project (Admin/test)</h1>
+  <form novalidate method="post" accept-charset="utf-8">
+      Name: <input type="text" ng-model="project.name" /><br/>
+      Description: <textarea ng-model="project.description" /></textarea><br/>
+      <button ng-click="addToPending()">Create Project</button>
+  </form>
+  <br>
+  <b>Status:</b> {{ status_text }}
+</div>
+{% endblock %}

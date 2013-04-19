@@ -1,0 +1,174 @@
+{% import "src/utils.jinja" as utils %}
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <title>Plays with AngularJS</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="Description"
+        content="AngularJS is what HTML would have been, had it been designed
+                 for building web-apps.  Declarative templates with
+                 data-binding, MVW, MVVM, MVC, dependency injection and great
+                 testability story all implemented with pure client-side
+                 JavaScript!">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+  <script src="/static/app.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="/static/playswith.css">
+  {#
+  [[ get_file_contents("src/angular.min.js") ]]
+  [[ get_file_contents("src/script.min.js") ]]
+  #}
+</head>
+
+
+<body ng-app="playsWith" class="container">
+  [[ utils.render_header() ]]
+
+  <h1>Complimentary Libraries, Tools, and Techniques</h1>
+  <div ng-controller="homepageController" class="container bwa-main-container">
+    <br/> <br/> <br/>
+    <div ng-repeat="project in data.projects">
+      <div project-info-small project="project"></div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+{#
+<body ng-controller="BWAController">
+  [[ utils.add_chrome_frame_support() ]]
+  [[ utils.render_header() ]]
+
+
+
+  <div role="main" class="container bwa-main-container">
+
+    [[ utils.insert_ng_templates([
+           "bwa-project.html",
+           ])
+    ]]
+
+    <div class="row first bwa-featured">
+      <div class="span8">
+        <bwa-project project="featured" lightbox="lightbox" class= "well bwa-project-well" add-tag="addTag"></bwa-project>
+      </div>
+      <div class="span4">
+        <div class="center">
+          <!-- TODO: make a properly sized image, remove style= hacks -->
+          <p class="bwa-neat">
+            <span class="badge badge-important bwa-count" ng-bind="projects.length || '?'">?</span> Neat things built with
+          <img class="AngularJS-large" src="img/AngularJS-large.png">
+          </p>
+        </div>
+        <div class="bwa-spacer"></div>
+        <hr>
+        <div class="bwa-spacer"></div>
+        <p>
+          Here we feature good examples of Angular apps and experiments.
+          Inspect, learn, and make your own!
+        </p>
+        <div class="center">
+          <a href="https://github.com/angular/builtwith.angularjs.org#submit">
+            <button class="btn-large btn-info">Submit your AngularJS app</button>
+          </a>
+        </div>
+
+        <div class="bwa-spacer"></div>
+        <hr>
+        <div class="bwa-spacer"></div>
+
+        <!-- Search -->
+        <form class="well">
+          <input type="text" class="input-large search-query" placeholder="Search" ng-model="query" ng-change="search()">
+
+          <div class="bwa-btn-tags">
+            <div class="btn-group bwa-btn-group">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                Tags
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li ng-show="tags.length == 0">
+                  <a href="#tag">No tags left!</a>
+                </li>
+                <li ng-repeat="tag in tags">
+                  <a href="#tag" ng-click="addTag()">{{tag}}</a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- active tags -->
+            <span class="label label-important bwa-label" ng-repeat="tag in activeTags" ng-click="removeTag()" ng-cloak>
+              <span ng-bind="tag"></span> <i class="icon-remove-sign"></i>
+            </span>
+          </div>
+
+          <select ng-options="p.val as p.label for p in sortables" class="input-medium bwa-select-sort" ng-model="sortPrep" ng-change="search()"></select>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="spacer"></div>
+
+    <div class="row bwa-projects" ng-repeat="projectCol in pagedProjects[currentPage]">
+      <div class="span6" ng-repeat="project in projectCol">
+        <bwa-project project="project" lightbox="lightbox" add-tag="addTag" class= "well bwa-project-well"></bwa-project>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="pagination">
+        <ul>
+          <li ng-class="{disabled: currentPage == 0}">
+            <a href ng-click="prevPage()">« Prev</a>
+          </li>
+          <li ng-repeat="n in range(pagedProjects.length)"
+            ng-class="{active: n == currentPage}"
+            ng-click="setPage()">
+            <a href ng-bind="n + 1">1</a>
+          </li>
+          <li ng-class="{disabled: currentPage == pagedProjects.length - 1}">
+            <a href ng-click="nextPage()">Next »</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  #}
+
+  <br/> <br/> <br/>
+  [[ utils.render_footer() ]]
+
+  {#
+  <div class="modal fade" ng-class="{in: lightbox()}">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="lightbox(false)">×</button>
+      <h2>{{lightbox().name}}</h2>
+    </div>
+    <div class="modal-body">
+      <a href="{{lightbox().url}}">
+        <img alt="{{lightbox() && lightbox().name + ' screenshot'}}" class="well" ng-src="{{lightbox() && 'projects/' + lightbox().thumb}}">
+      </a>
+      <p>{{lightbox().desc}}</p>
+      <p>
+        <span class="label label-info bwa-tag" ng-repeat="tag in lightbox().tags">{{tag}}</span>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <a href="{{lightbox().url}}" class="btn btn-primary">Check out the App</a>
+      <a ng-show="lightbox().src" href="{{lightbox().src}}" class="btn">View the Source</a>
+      <a ng-show="lightbox().info" href="{{lightbox().info}}" class="btn">Read More</a>
+    </div>
+  </div>
+  <div class="modal-backdrop fade" ng-class="{in: lightbox()}" ng-click='lightbox(false)'></div>
+  #}
+</body>
+</html>
