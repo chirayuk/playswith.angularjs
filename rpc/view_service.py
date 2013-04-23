@@ -100,8 +100,8 @@ class ViewService(remote.Service):
     query = models.PendingProjectModel.query()
     project_models = list(query.iter())
     for model in project_models:
-      model.msg.id = model.id
-    return [model.msg for model in project_models]
+      model.msg.id = model.key.urlsafe()
+    return models.ProjectList(projects=[model.msg for model in project_models])
 
   @remote.method(models.Project, models.Project)
   def approve_project(self, project):

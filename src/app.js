@@ -8,6 +8,7 @@ function load_projects($scope, $http) {
       success(function(data, status) {
           $scope.status = status;
           $scope.data = data;
+          console.log("load_projects: %O", data);
         }).
       error(function(projects, status) {
           $scope.status = status;         
@@ -22,6 +23,7 @@ function load_pending_projects($scope, $http) {
       success(function(data, status) {
           $scope.status = status;
           $scope.projects = data.projects;
+          console.log("load_pending_projects: projects = %O", data);
         }).
       error(function(projects, status) {
           $scope.status = status;         
@@ -74,7 +76,7 @@ playsWith.controller("submitNewProjectController", function ($scope, $http) {
         success(function(project, status) {
             $scope.status = status;
             $scope.project = project;
-            console.log("Created project: %O", project);
+            console.log("addToPending: project with id = %O", project);
             $scope.status_text = "Success!";
           }).
         error(function(data, status) {
