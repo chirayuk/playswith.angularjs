@@ -19,8 +19,8 @@ class Project(messages.Message):
   url  = messages.StringField(5)
   info  = messages.StringField(6)
   thumbnail_url  = messages.StringField(7)
-  # submitter  = messages.StringField(3, repeated=True)
-  # submissionDate  = messages.StringField(3, repeated=True)
+  submitter_email  = messages.StringField(8)
+  submission_timestamp  = messages.IntegerField(9)
 
 
 class ProjectModel(ndb.Model):
