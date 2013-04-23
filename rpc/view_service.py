@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 
+import calendar
 import io
+import time
 import yaml
 
 from protorpc import message_types
@@ -93,6 +95,7 @@ class ViewService(remote.Service):
     project_model = models.PendingProjectModel(msg=project)
     key = project_model.put()
     project.id = key.urlsafe()
+    project.submission_timestamp = calendar.timegm(time.gmtime())
     return project
 
   @remote.method(message_types.VoidMessage, models.ProjectList)
