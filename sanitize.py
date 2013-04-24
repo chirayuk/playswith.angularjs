@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 import io
 import urlparse
+import urllib
 
 import lxml.etree
 import markupsafe
@@ -13,6 +14,10 @@ def sanitize_url(url):
   parsed = urlparse.urlparse(url)
   if parsed.scheme not in ("http", "https"):
     return None
+  # The path can contain <, etc. characters.  Re-encode it.
+  # Why isn't there something in the stdlib to do stuff like this?
+  parsed = parsed._replace(
+      path=urllib.quote(urllib.unquote(parsed.path)))
   url = urlparse.urlunparse(parsed)
   return url
 

@@ -14,6 +14,11 @@ sanitize_url_test_cases = (
     (None, u"javascript:alert(1)"),
     # File.
     (None, u"file:///etc/passwd"),
+    # Quoting.
+    (u"http://www.google.com/a%20b%20c", u"http://www.google.com/a b c"),
+    (u"http://www.google.com/b%22%3Cb%3Ec", u"http://www.google.com/b\"<b>c"),
+    # Closing a quote and starting a script tag in the path.
+    (u"http://www.google.com/%22%3Cscript%3E", u"http://www.google.com/\"<script>"),
   )
 
 def sanitize_url_and_assert(expected_url, given_url):
