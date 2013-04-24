@@ -3,8 +3,9 @@
 import logging
 logger = logging.getLogger(__name__)
 import io
-import urlparse
+import urlescape
 import urllib
+import urlparse
 
 import lxml.etree
 import markupsafe
@@ -14,12 +15,18 @@ def sanitize_url(url):
   parsed = urlparse.urlparse(url)
   if parsed.scheme not in ("http", "https"):
     return None
+  if not parsed.netloc:
+    return None
   # The path can contain <, etc. characters.  Re-encode it.
   # Why isn't there something in the stdlib to do stuff like this?
   parsed = parsed._replace(
-      path=urllib.quote(urllib.unquote(parsed.path)))
+      path=urllib.quote(urllib.unquote(parsed.path)),
+      netloc=urllib.quote(urllib.unquote(parsed.netloc)),
+      query=urllib.quote(urllib.unquote(parsed.query)),
+      fragment=urllib.quote(urllib.unquote(parsed.fragment)),
+      )
   url = urlparse.urlunparse(parsed)
-  return url
+  return urlescape.parse(url).escape().punycode().utf8()
 
 
 # The only allowed tag is the <a> tag.  The only valid attribute on that tag is
