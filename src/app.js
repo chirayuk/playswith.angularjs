@@ -71,36 +71,6 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
   }
 });
 
-playsWith.controller("newProjectRequestController", function ($scope, $http) {
-  $scope.request = {project: {} };
-  $scope.status_text = "Not yet submitted.";
-
-  $scope.addToPending = function() {
-    var url = "/rpc/view.create_project_request";
-    $scope.status_text = "Submitting ...";
-    console.log("%O", $scope.request);
-    // TODO(chirayu): Better way of getting tags.  UI should have some kind of
-    // autocomplete as well.
-    var tags = $scope.request.project.tags;
-    if (tags && tags.trim) {
-      $scope.request.project.tags = tags.split(",").map(
-          function(tag) { return tag.trim() });
-    }
-    $http({method: "POST", url: url, data: $scope.request }).
-        success(function(request, status) {
-            $scope.status = status;
-            $scope.request = request;
-            console.log("addToPending: request with id = %O", request);
-            $scope.status_text = "Success!";
-          }).
-        error(function(data, status) {
-            $scope.status = status;         
-            $scope.status_text = "Failed.";
-          });
-  }
-});
-
-
 var directives = playsWith.directives = {};
 
 directives.projectInfoSmall = function () {
@@ -126,6 +96,98 @@ directives.projectInfoSmall = function () {
     }
   };
 };
+
+directives.newProjectRequest = function () {
+  console.log("directives.newProjectRequest");
+  return {
+    restrict: "A",
+
+    controller: function ($scope, $http) {
+      $scope.request = {project: {} };
+      $scope.submit_disabled = false;
+      $scope.status_text = "Not yet submitted.";
+
+      $scope.addToPending = function() {
+        var url = "/rpc/view.create_project_request";
+        $scope.status_text = "Submitting ...";
+        console.log("%O", $scope.request);
+        // TODO(chirayu): Better way of getting tags.  UI should have some kind of
+        // autocomplete as well.
+        var tags = $scope.request.project.tags;
+        if (tags && tags.trim) {
+          $scope.request.project.tags = tags.split(",").map(
+              function(tag) { return tag.trim() });
+        }
+        $scope.submit_disabled = true;
+        $http({method: "POST", url: url, data: $scope.request }).
+            success(function(request, status) {
+                $scope.status = status;
+                $scope.request = request;
+                console.log("addToPending: request with id = %O", request);
+                $scope.status_text = "Success!";
+              }).
+            error(function(data, status) {
+                $scope.status = status;         
+                $scope.status_text = "Failed.";
+                $scope.submit_disabled = false;
+              });
+      }
+    },
+
+    template: {% filter to_json -%}
+      <div>
+        <h1>Submit a new project</h1>
+        <form class="form-horizontal" novalidate method="post" accept-charset="utf-8">
+          <div class="control-group">
+            <label class="control-label" for="inputName">Name</label>
+              <div class="controls">
+                <input ng-model="request.project.name" type="text" id="inputName" placeholder="Project Name">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputDescription">Description</label>
+              <div class="controls">
+                <textarea ng-model="request.project.description" rows=5 id="inputDescription"></textarea>
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputURL">URL</label>
+              <div class="controls">
+                <input ng-model="request.project.url" type="text" id="inputURL" placeholder="Main URL">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
+              <div class="controls">
+                <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputTagsCsv">Tags<br>(space/comma separated)</label>
+              <div class="controls">
+                <input ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="name@example.com">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputSubmitterEmail">Submitter E-mail</label>
+              <div class="controls">
+                <input ng-model="request.submitter_email" type="text" id="inputSubmitterEmail" placeholder="name@example.com">
+              </div>
+          </div>
+          <div class="form-actions">
+            <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
+          </div>
+        </form>
+        <br>
+        <b>Status:</b> {{ status_text }}
+      {%- endfilter %},
+    scope: {},
+    link: function($scope) {
+      console.log("newProjectRequest: link: request = %O", $scope.request);
+    }
+  };
+};
+
 
 directives.projectRequest = function () {
   console.log("directives.projectRequest");
