@@ -192,6 +192,7 @@ v;(function(a){y(a,{bootstrap:vb,copy:W,extend:y,equals:ja,element:v,forEach:o,i
 form:pd,script:Xd,select:Zd,style:ae,option:$d,ngBind:Ad,ngBindHtmlUnsafe:Cd,ngBindTemplate:Bd,ngClass:Dd,ngClassEven:Fd,ngClassOdd:Ed,ngCsp:Id,ngCloak:Gd,ngController:Hd,ngForm:qd,ngHide:Qd,ngInclude:Kd,ngInit:Ld,ngNonBindable:Md,ngPluralize:Nd,ngRepeat:Od,ngShow:Pd,ngSubmit:Jd,ngStyle:Rd,ngSwitch:Sd,ngSwitchWhen:Td,ngSwitchDefault:Ud,ngOptions:Yd,ngView:Wd,ngTransclude:Vd,ngModel:vd,ngList:xd,ngChange:wd,required:ec,ngRequired:ec,ngValue:zd}).directive(qb).directive(fc);a.provider({$anchorScroll:xc,
 $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document:Ec,$exceptionHandler:Fc,$filter:Tb,$interpolate:Gc,$http:Zc,$httpBackend:$c,$location:Kc,$log:Lc,$parse:Pc,$route:Sc,$routeParams:Tc,$rootScope:Uc,$q:Qc,$sniffer:Vc,$templateCache:Bc,$timeout:dd,$window:Wc})}])})(Ia);v(V).ready(function(){mc(V,vb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');
 
+    
   </script>
   <script src="/static/app.js" type="text/javascript" charset="utf-8"></script>
   <link rel="stylesheet" href="/static/playswith.css">
@@ -266,12 +267,12 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   </header>
 
   
-  <div ng-controller="pendingProjectsController">
+  <div ng-controller="projectRequestsController">
     <h1>Pending Projects</h1>
-    <div ng-repeat="project in projects">
+    <div ng-repeat="request in requests">
         <div>
-          <div pending-project-info project="project"></div>
-          <button ng-click="approve(project)">Approve Project</button>
+          <div project-request request="request"></div>
+          <button ng-click="approve(request)">Approve Project</button>
       </div>
     </div>
     <br>

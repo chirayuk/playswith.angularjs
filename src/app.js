@@ -1,5 +1,3 @@
-"use strict";
-
 {% import "src/utils.jinja" as utils -%}
 
 function load_projects($scope, $http) {
@@ -17,22 +15,23 @@ function load_projects($scope, $http) {
 }
 
 
-function load_pending_projects($scope, $http) {
-  var url = "/rpc/view.get_pending_project_list";
+function load_project_requests($scope, $http) {
+  var url = "/rpc/view.get_project_request_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
-          $scope.projects = data.projects;
-          console.log("load_pending_projects: projects = %O", data);
+          $scope.requests = data.requests;
+          console.log("load_project_requests: requests = %O", data);
         }).
       error(function(projects, status) {
           $scope.status = status;         
-          $scope.projects = null;
+          $scope.requests = null;
         });
 }
 
 
 // Main app module.
+{# var playsWith = angular.module('playsWith', ['ngSanitize']); #}
 var playsWith = angular.module('playsWith', []);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
@@ -49,20 +48,20 @@ playsWith.controller("homepageController", function ($scope, $http) {
 });
 
 
-playsWith.controller("pendingProjectsController", function ($scope, $http) {
-  $scope.projects = [];
+playsWith.controller("projectRequestsController", function ($scope, $http) {
+  $scope.requests = [];
   $scope.status_text = "Not yet submitted.";
-  load_pending_projects($scope, $http);
+  load_project_requests($scope, $http);
 
-  $scope.approve = function(project) {
-    var url = "/rpc/view.approve_project";
+  $scope.approve = function(request) {
+    var url = "/rpc/view.approve_project_request";
     $scope.status_text = "Approving ...";
-    console.log("%O", project);
-    $http({method: "POST", url: url, data: project }).
-        success(function(project, status) {
+    console.log("%O", request);
+    $http({method: "POST", url: url, data: request }).
+        success(function(request, status) {
             $scope.status = status;
-            console.log("Approved project: %O", project);
-            load_pending_projects($scope, $http);
+            console.log("Approved request: %O", request);
+            load_project_requests($scope, $http);
             $scope.status_text = "Success!";
           }).
         error(function(data, status) {
@@ -72,19 +71,26 @@ playsWith.controller("pendingProjectsController", function ($scope, $http) {
   }
 });
 
-playsWith.controller("submitNewProjectController", function ($scope, $http) {
-  $scope.project = {};
+playsWith.controller("newProjectRequestController", function ($scope, $http) {
+  $scope.request = {project: {} };
   $scope.status_text = "Not yet submitted.";
 
   $scope.addToPending = function() {
-    var url = "/rpc/view.create_pending_project";
+    var url = "/rpc/view.create_project_request";
     $scope.status_text = "Submitting ...";
-    console.log("%O", $scope.project);
-    $http({method: "POST", url: url, data: $scope.project }).
-        success(function(project, status) {
+    console.log("%O", $scope.request);
+    // TODO(chirayu): Better way of getting tags.  UI should have some kind of
+    // autocomplete as well.
+    var tags = $scope.request.project.tags;
+    if (tags && tags.trim) {
+      $scope.request.project.tags = tags.split(",").map(
+          function(tag) { return tag.trim() });
+    }
+    $http({method: "POST", url: url, data: $scope.request }).
+        success(function(request, status) {
             $scope.status = status;
-            $scope.project = project;
-            console.log("addToPending: project with id = %O", project);
+            $scope.request = request;
+            console.log("addToPending: request with id = %O", request);
             $scope.status_text = "Success!";
           }).
         error(function(data, status) {
@@ -104,7 +110,11 @@ directives.projectInfoSmall = function () {
     template: {% filter to_json -%}
       <div>
         <h3>{{project.name}}</h3>
-        <p>{{project.description}}</p>
+        <div ng-bind-html-unsafe="project.description"></div>
+        <p>Website: <a rel="nofollow" href="{{project.url"}}>{{project.url}}</a></p>
+        Tags: <span ng-repeat="tag in project.tags">
+            {{tag}}
+          </span>
         <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
       </div>
       {%- endfilter %},
@@ -117,23 +127,28 @@ directives.projectInfoSmall = function () {
   };
 };
 
-directives.pendingProjectInfo = function () {
-  console.log("directives.pendingProjectInfo");
+directives.projectRequest = function () {
+  console.log("directives.projectRequest");
   return {
     restrict: "A",
-    template: {% filter to_json -%}
+    template: {% filter to_json %}
       <div>
-        <h3>Name: {{project.name}}</h3>
-        <p>Description: {{project.description}}</p>
-        <p>Submission time: {{project.submission_timestamp | utcTimestampToDate:"medium" }}</p>
-        <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
+        <h3>Name: {{request.project.name}}</h3>
+        <p>Description: {{request.project.description}}</p>
+        <p>Submission time: {{request.submission_timestamp | utcTimestampToDate:"medium" }}</p>
+        <p>Website: <a href="{{request.project.url"}}>{{request.project.url}}</a></p>
+        Tags: <ul>
+        <li ng-repeat="tag in request.project.tags">
+          {{tag}}
+        </li>
+        <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
       </div>
       {%- endfilter %},
     scope: {
-      project: "="
+      request: "="
     },
     link: function($scope) {
-      console.log("projectInfoSmall: link: project = %O", $scope.project);
+      console.log("projectInfoSmall: link: request = %O", $scope.request);
     }
   };
 };

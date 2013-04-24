@@ -170,9 +170,7 @@ A;j++)if(C[j].value==""){p=r=C.eq(j);break}l.init(q,r,x);if(n&&(h.required||h.ng
 d,e){var g=d.parent(),m=g.data("$selectController")||g.parent().data("$selectController");m&&m.databound?d.prop("selected",!1):m=c;f?a.$watch(f,function(a,c){e.$set("value",a);a!==c&&m.removeOption(c);m.addOption(a)}):m.addOption(e.value);d.bind("$destroy",function(){m.removeOption(e.value)})}}}}],ae=Q({restrict:"E",terminal:!0});(ca=M.jQuery)?(v=ca,y(ca.fn,{scope:za.scope,controller:za.controller,injector:za.injector,inheritedData:za.inheritedData}),fb("remove",!0),fb("empty"),fb("html")):v=P;Ia.element=
 v;(function(a){y(a,{bootstrap:vb,copy:W,extend:y,equals:ja,element:v,forEach:o,injector:wb,noop:t,bind:ab,toJson:da,fromJson:tb,identity:pa,isUndefined:u,isDefined:w,isString:x,isFunction:I,isObject:L,isNumber:Za,isElement:jc,isArray:C,version:md,isDate:qa,lowercase:J,uppercase:na,callbacks:{counter:0},noConflict:gc});xa=oc(M);try{xa("ngLocale")}catch(c){xa("ngLocale",[]).provider("$locale",cd)}xa("ng",["ngLocale"],["$provide",function(a){a.provider("$compile",Hb).directive({a:od,input:dc,textarea:dc,
 form:pd,script:Xd,select:Zd,style:ae,option:$d,ngBind:Ad,ngBindHtmlUnsafe:Cd,ngBindTemplate:Bd,ngClass:Dd,ngClassEven:Fd,ngClassOdd:Ed,ngCsp:Id,ngCloak:Gd,ngController:Hd,ngForm:qd,ngHide:Qd,ngInclude:Kd,ngInit:Ld,ngNonBindable:Md,ngPluralize:Nd,ngRepeat:Od,ngShow:Pd,ngSubmit:Jd,ngStyle:Rd,ngSwitch:Sd,ngSwitchWhen:Td,ngSwitchDefault:Ud,ngOptions:Yd,ngView:Wd,ngTransclude:Vd,ngModel:vd,ngList:xd,ngChange:wd,required:ec,ngRequired:ec,ngValue:zd}).directive(qb).directive(fc);a.provider({$anchorScroll:xc,
-$animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document:Ec,$exceptionHandler:Fc,$filter:Tb,$interpolate:Gc,$http:Zc,$httpBackend:$c,$location:Kc,$log:Lc,$parse:Pc,$route:Sc,$routeParams:Tc,$rootScope:Uc,$q:Qc,$sniffer:Vc,$templateCache:Bc,$timeout:dd,$window:Wc})}])})(Ia);v(V).ready(function(){mc(V,vb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');"use strict";
-
-function load_projects($scope, $http) {
+$animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document:Ec,$exceptionHandler:Fc,$filter:Tb,$interpolate:Gc,$http:Zc,$httpBackend:$c,$location:Kc,$log:Lc,$parse:Pc,$route:Sc,$routeParams:Tc,$rootScope:Uc,$q:Qc,$sniffer:Vc,$templateCache:Bc,$timeout:dd,$window:Wc})}])})(Ia);v(V).ready(function(){mc(V,vb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');function load_projects($scope, $http) {
   var url = "/rpc/view.get_project_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
@@ -187,22 +185,23 @@ function load_projects($scope, $http) {
 }
 
 
-function load_pending_projects($scope, $http) {
-  var url = "/rpc/view.get_pending_project_list";
+function load_project_requests($scope, $http) {
+  var url = "/rpc/view.get_project_request_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
-          $scope.projects = data.projects;
-          console.log("load_pending_projects: projects = %O", data);
+          $scope.requests = data.requests;
+          console.log("load_project_requests: requests = %O", data);
         }).
       error(function(projects, status) {
           $scope.status = status;         
-          $scope.projects = null;
+          $scope.requests = null;
         });
 }
 
 
 // Main app module.
+
 var playsWith = angular.module('playsWith', []);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
@@ -219,20 +218,20 @@ playsWith.controller("homepageController", function ($scope, $http) {
 });
 
 
-playsWith.controller("pendingProjectsController", function ($scope, $http) {
-  $scope.projects = [];
+playsWith.controller("projectRequestsController", function ($scope, $http) {
+  $scope.requests = [];
   $scope.status_text = "Not yet submitted.";
-  load_pending_projects($scope, $http);
+  load_project_requests($scope, $http);
 
-  $scope.approve = function(project) {
-    var url = "/rpc/view.approve_project";
+  $scope.approve = function(request) {
+    var url = "/rpc/view.approve_project_request";
     $scope.status_text = "Approving ...";
-    console.log("%O", project);
-    $http({method: "POST", url: url, data: project }).
-        success(function(project, status) {
+    console.log("%O", request);
+    $http({method: "POST", url: url, data: request }).
+        success(function(request, status) {
             $scope.status = status;
-            console.log("Approved project: %O", project);
-            load_pending_projects($scope, $http);
+            console.log("Approved request: %O", request);
+            load_project_requests($scope, $http);
             $scope.status_text = "Success!";
           }).
         error(function(data, status) {
@@ -242,19 +241,26 @@ playsWith.controller("pendingProjectsController", function ($scope, $http) {
   }
 });
 
-playsWith.controller("submitNewProjectController", function ($scope, $http) {
-  $scope.project = {};
+playsWith.controller("newProjectRequestController", function ($scope, $http) {
+  $scope.request = {project: {} };
   $scope.status_text = "Not yet submitted.";
 
   $scope.addToPending = function() {
-    var url = "/rpc/view.create_pending_project";
+    var url = "/rpc/view.create_project_request";
     $scope.status_text = "Submitting ...";
-    console.log("%O", $scope.project);
-    $http({method: "POST", url: url, data: $scope.project }).
-        success(function(project, status) {
+    console.log("%O", $scope.request);
+    // TODO(chirayu): Better way of getting tags.  UI should have some kind of
+    // autocomplete as well.
+    var tags = $scope.request.project.tags;
+    if (tags && tags.trim) {
+      $scope.request.project.tags = tags.split(",").map(
+          function(tag) { return tag.trim() });
+    }
+    $http({method: "POST", url: url, data: $scope.request }).
+        success(function(request, status) {
             $scope.status = status;
-            $scope.project = project;
-            console.log("addToPending: project with id = %O", project);
+            $scope.request = request;
+            console.log("addToPending: request with id = %O", request);
             $scope.status_text = "Success!";
           }).
         error(function(data, status) {
@@ -271,7 +277,7 @@ directives.projectInfoSmall = function () {
   console.log("directives.projectInfoSmall");
   return {
     restrict: "A",
-    template: "<div>\n        <h3>{{project.name}}</h3>\n        <p>{{project.description}}</p>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n      </div>",
+    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url\"}}>{{project.url}}</a></p>\n        Tags: <span ng-repeat=\"tag in project.tags\">\n            {{tag}}\n          </span>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n      </div>",
     scope: {
       project: "="
     },
@@ -281,16 +287,16 @@ directives.projectInfoSmall = function () {
   };
 };
 
-directives.pendingProjectInfo = function () {
-  console.log("directives.pendingProjectInfo");
+directives.projectRequest = function () {
+  console.log("directives.projectRequest");
   return {
     restrict: "A",
-    template: "<div>\n        <h3>Name: {{project.name}}</h3>\n        <p>Description: {{project.description}}</p>\n        <p>Submission time: {{project.submission_timestamp | utcTimestampToDate:\"medium\" }}</p>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n      </div>",
+    template: "\n      <div>\n        <h3>Name: {{request.project.name}}</h3>\n        <p>Description: {{request.project.description}}</p>\n        <p>Submission time: {{request.submission_timestamp | utcTimestampToDate:\"medium\" }}</p>\n        <p>Website: <a href=\"{{request.project.url\"}}>{{request.project.url}}</a></p>\n        Tags: <ul>\n        <li ng-repeat=\"tag in request.project.tags\">\n          {{tag}}\n        </li>\n        <div ng-show=\"request.thumbnail_url\"><img ng-src=\"{{request.thumbnail_url}}\">\n      </div>",
     scope: {
-      project: "="
+      request: "="
     },
     link: function($scope) {
-      console.log("projectInfoSmall: link: project = %O", $scope.project);
+      console.log("projectInfoSmall: link: request = %O", $scope.request);
     }
   };
 };

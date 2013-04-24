@@ -17,10 +17,9 @@ class Project(messages.Message):
   description  = messages.StringField(3)
   tags  = messages.StringField(4, repeated=True)
   url  = messages.StringField(5)
-  info  = messages.StringField(6)
-  thumbnail_url  = messages.StringField(7)
-  submitter_email  = messages.StringField(8)
-  submission_timestamp  = messages.IntegerField(9)
+  info_url  = messages.StringField(6)
+  src_url  = messages.StringField(7)
+  thumbnail_key  = messages.StringField(8)
 
 
 class ProjectModel(ndb.Model):
@@ -31,23 +30,35 @@ class ProjectModel(ndb.Model):
           "name",
           "description",
           "tags",
-          "info",
           ]
       )
 
 
-class PendingProjectModel(ndb.Model):
+class ProjectRequest(messages.Message):
+  id  = messages.StringField(1)
+  project = messages.MessageField(Project, 2)
+  thumbnail_url = messages.StringField(3)
+  submitter_email = messages.StringField(4)
+  submission_timestamp  = messages.IntegerField(5)
+  notes = messages.StringField(6)
+
+
+class ProjectRequestModel(ndb.Model):
   msg = ndb.msgprop.MessageProperty(
-      Project,
+      ProjectRequest,
       indexed_fields=[
-          "id",
-          "name",
-          "description",
-          "tags",
-          "info",
+          "project.id",
+          "project.name",
+          "project.description",
+          "project.tags",
+          "submitter_email",
           ]
       )
 
 
 class ProjectList(messages.Message):
   projects = messages.MessageField(Project, 1, repeated=True)
+
+
+class ProjectRequestList(messages.Message):
+  requests = messages.MessageField(ProjectRequest, 1, repeated=True)

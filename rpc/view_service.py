@@ -5,6 +5,9 @@ import io
 import time
 import yaml
 
+import logging
+logger = logging.getLogger(__name__)
+
 from protorpc import message_types
 from protorpc import remote
 
@@ -64,18 +67,12 @@ projects_list_json = yaml.load(io.StringIO(ur'''
   '''))
 
 
-def get_pending_project_by_id(project_id):
-    project_model = ndb.Key(urlsafe=project_id).get()
-    return project_model
+def get_project_request_by_id(project_request_id):
+    project_request = ndb.Key(urlsafe=project_request_id).get()
+    return project_request
 
 
 class ViewService(remote.Service):
-  @remote.method(message_types.VoidMessage, models.ProjectList)
-  def get_project_list_ckck(self, request):
-    return models.ProjectList(projects=[
-      models.Project(**project_json)
-      for project_json in projects_list_json])
-
   @remote.method(message_types.VoidMessage, models.ProjectList)
   def get_project_list(self, request):
     query = models.ProjectModel.query()
@@ -90,29 +87,34 @@ class ViewService(remote.Service):
     project.id = key.urlsafe()
     return project
 
-  @remote.method(models.Project, models.Project)
-  def create_pending_project(self, project):
-    project_model = models.PendingProjectModel(msg=project)
-    key = project_model.put()
-    project.id = key.urlsafe()
-    project.submission_timestamp = calendar.timegm(time.gmtime())
-    return project
+  @remote.method(models.ProjectRequest, models.ProjectRequest)
+  def create_project_request(self, project_request):
+    project_request.id = None
+    project_request.project.id = None
+    project_request.project.thumbnail_key = None
+    project_request.submission_timestamp = calendar.timegm(time.gmtime())
+    project_request_model = models.ProjectRequestModel(msg=project_request)
+    key = project_request_model.put()
+    project_request.id = key.urlsafe()
+    return project_request
 
-  @remote.method(message_types.VoidMessage, models.ProjectList)
-  def get_pending_project_list(self, request):
-    query = models.PendingProjectModel.query()
+  @remote.method(message_types.VoidMessage, models.ProjectRequestList)
+  def get_project_request_list(self, request):
+    query = models.ProjectRequestModel.query()
     project_models = list(query.iter())
     for model in project_models:
       model.msg.id = model.key.urlsafe()
-    return models.ProjectList(projects=[model.msg for model in project_models])
+      logging.warn("CKCK: id = {0}".format(model.key))
+    return models.ProjectRequestList(requests=[model.msg for model in project_models])
 
-  @remote.method(models.Project, models.Project)
-  def approve_project(self, project):
+  @remote.method(models.ProjectRequest, models.ProjectRequest)
+  def approve_project_request(self, project_request):
     # TODO(chirayu): Ensure that this id exists.  Add more checks.
-    pending_project_model = get_pending_project_by_id(project.id)
-    project_model = models.ProjectModel(msg=pending_project_model.msg)
+    project_request_model = get_project_request_by_id(project_request.id)
+    # TODO(chirayu): Set the key based on the project_request_model key.
+    project_model = models.ProjectModel(msg=project_request.project, parent=project_request_model.key)
     key = project_model.put()
-    project.id = key.urlsafe()
+    project_request.id = key.urlsafe()
     # TODO(chirayu): Create a link from this project to it's approval chain / history.
-    pending_project_model.key.delete()
-    return project
+    project_request_model.key.delete()
+    return project_request
