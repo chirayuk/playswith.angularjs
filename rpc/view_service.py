@@ -91,7 +91,8 @@ class ViewService(remote.Service):
   def create_project_request(self, project_request):
     project_request.id = None
     project_request.project.id = None
-    project_request.project.thumbnail_key = None
+    # TODO(chirayu):  urlfetch to blobstore and store that url here.
+    project_request.project.thumbnail_url = project_request.thumbnail_url
     project_request.submission_timestamp = calendar.timegm(time.gmtime())
     project_request_model = models.ProjectRequestModel(msg=project_request)
     key = project_request_model.put()

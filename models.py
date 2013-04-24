@@ -19,7 +19,7 @@ class Project(messages.Message):
   url  = messages.StringField(5)
   info_url  = messages.StringField(6)
   src_url  = messages.StringField(7)
-  thumbnail_key  = messages.StringField(8)
+  thumbnail_url  = messages.StringField(8)
 
 
 class ProjectModel(ndb.Model):
