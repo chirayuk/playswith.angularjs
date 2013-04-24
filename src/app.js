@@ -197,7 +197,7 @@ directives.projectRequest = function () {
       <div>
         <div class="row">
           <div class="span2 pwa-item-label">Name</div>
-          <div class="span10" ng-bind-html-unsafe="request.project.name"></div>
+          <div class="span10"><b>{{request.project.name}}</b></div>
         </div>
         <div class="row">
           <div class="span2 pwa-item-label">Description</div>
