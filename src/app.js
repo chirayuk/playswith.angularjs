@@ -81,7 +81,7 @@ directives.projectInfoSmall = function () {
       <div>
         <h3>{{project.name}}</h3>
         <div ng-bind-html-unsafe="project.description"></div>
-        <p>Website: <a rel="nofollow" href="{{project.url"}}>{{project.url}}</a></p>
+        <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
         Tags: <span ng-repeat="tag in project.tags">
             {{tag}}
           </span>
@@ -163,7 +163,7 @@ directives.newProjectRequest = function () {
               </div>
           </div>
           <div class="control-group">
-            <label class="control-label" for="inputTagsCsv">Tags<br>(space/comma separated)</label>
+            <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
               <div class="controls">
                 <input ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="name@example.com">
               </div>
@@ -205,7 +205,7 @@ directives.projectRequest = function () {
         </div>
         <div class="row">
           <div class="span2 pwa-item-label">Website</div>
-          <div class="span10"><a href="{{request.project.url"}}>{{request.project.url}}</a></div>
+          <div class="span10"><a href="{{request.project.url}}">{{request.project.url}}</a></div>
         </div>
         <div class="row">
           <div class="span2 pwa-item-label">Tags</div>

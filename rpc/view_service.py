@@ -24,49 +24,6 @@ class Error(Exception):
 
 
 
-projects_list_json = yaml.load(io.StringIO(ur'''
-# List of tools
--   name: Karma
-    description: |
-        Karma runs your unit tests faster than any other tool we know. The 1K+
-        AngularJS tests run in ~3 seconds. It runs tests every time you save. It
-        runs tests on real browsers including Android and iOS. It integrates with
-        WebStorm's debugger. It works with any test framework, but comes with
-        specific support for Jasmine and Mocha, and AngularJS' scenario runner. It
-        will change your life. No, we can't believe the name either.
-    tags:
-    -   featured
-    -   development
-    -   testing
-
--   name: UglifyJS
-    description: |
-        AngularJS offers minified versions of all of its libraries, but what
-        about your code? If you want your code to load quickly, this may be the
-        tool for you!
-    tags:
-    -   featured
-    -   deployment
-
--   name: YouTube on PS3
-    thumbnail_url: http://builtwith.angularjs.org/projects/yt-ps3/thumb.png
-    description: The YouTube application for Sony's PlayStation 3.
-    url: http://us.playstation.com/youtube/
-    info: http://youtube-global.blogspot.com/2012/08/game-on-get-new-youtube-app-for.html
-    # submitter: alimills
-    # submissionDate: "2012-08-14"
-    tags:
-    -   featured
-    -   Production
-    -   Entertainment
-    -   Animations
-    -   Local Storage
-    -   Video API
-    -   Google Closure
-    -   No jQuery
-  '''))
-
-
 def get_project_request_by_id(project_request_id):
     project_request = ndb.Key(urlsafe=project_request_id).get()
     return project_request
@@ -78,14 +35,6 @@ class ViewService(remote.Service):
     query = models.ProjectModel.query()
     projects = query.iter()
     return models.ProjectList(projects=[project.msg for project in projects])
-
-  # Admin/testing only.  Use create_request.
-  @remote.method(models.Project, models.Project)
-  def create_project(self, project):
-    project_model = models.ProjectModel(msg=project)
-    key = project_model.put()
-    project.id = key.urlsafe()
-    return project
 
   @remote.method(models.ProjectRequest, models.ProjectRequest)
   def create_project_request(self, project_request):
