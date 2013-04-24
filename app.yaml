@@ -6,9 +6,11 @@ api_version: 1
 
 
 libraries:
+- name: markupsafe
+  version: latest
 - name: jinja2
   version: latest
-- name: markupsafe
+- name: lxml
   version: latest
 - name: webapp2
   version: latest
