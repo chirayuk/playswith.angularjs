@@ -200,7 +200,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
 </head>
 
 
-<body ng-app="playsWith" class="container">
+<body ng-app="playsWith">
   
   <header class="header">
     <div class="navbar navbar-fixed-top">
@@ -266,15 +266,17 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
     </div>
   </header>
 
-  
+  <div class="container">
+    
   <h1>Complimentary Libraries, Tools, and Techniques</h1>
-  <div ng-controller="homepageController" class="container bwa-main-container">
+  <div ng-controller="homepageController">
     <br/> <br/> <br/>
     <div ng-repeat="project in data.projects">
       <div project-info-small project="project"></div>
     </div>
   </div>
 
+  </div>
   <br/> <br/> <br/>
   
   <footer class="footer">

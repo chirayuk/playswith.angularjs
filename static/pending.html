@@ -200,7 +200,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
 </head>
 
 
-<body ng-app="playsWith" class="container">
+<body ng-app="playsWith">
   
   <header class="header">
     <div class="navbar navbar-fixed-top">
@@ -266,7 +266,8 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
     </div>
   </header>
 
-  
+  <div class="container">
+    
   <div ng-controller="projectRequestsController">
     <h1>Pending Projects</h1>
     <div ng-repeat="request in requests">
@@ -280,6 +281,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
     <b>Status:</b> {{ status_text }}
   </div>
 
+  </div>
   <br/> <br/> <br/>
   
   <footer class="footer">

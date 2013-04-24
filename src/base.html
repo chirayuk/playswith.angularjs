@@ -29,9 +29,11 @@
 </head>
 
 
-<body ng-app="playsWith" class="container">
+<body ng-app="playsWith">
   [[ utils.render_header() ]]
-  {% block main_content %}{% endblock %}
+  <div class="container">
+    {% block main_content %}{% endblock %}
+  </div>
   <br/> <br/> <br/>
   [[ utils.render_footer() ]]
 </body>
