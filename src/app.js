@@ -137,7 +137,8 @@ directives.newProjectRequest = function () {
     template: {% filter to_json -%}
       <div>
         <h1>Submit a new project</h1>
-        <form class="form-horizontal" novalidate method="post" accept-charset="utf-8">
+        <div class="row">
+        <form class="well form-horizontal span6" novalidate method="post" accept-charset="utf-8">
           <div class="control-group">
             <label class="control-label" for="inputName">Name</label>
               <div class="controls">
@@ -165,7 +166,7 @@ directives.newProjectRequest = function () {
           <div class="control-group">
             <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
               <div class="controls">
-                <input ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="name@example.com">
+                <input ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
               </div>
           </div>
           <div class="control-group">
@@ -178,6 +179,7 @@ directives.newProjectRequest = function () {
             <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
           </div>
         </form>
+        </div>
         <br>
         <b>Status:</b> {{ status_text }}
       {%- endfilter %},
