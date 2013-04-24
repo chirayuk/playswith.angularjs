@@ -270,10 +270,11 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   <div ng-controller="projectRequestsController">
     <h1>Pending Projects</h1>
     <div ng-repeat="request in requests">
-        <div>
-          <div project-request request="request"></div>
-          <button ng-click="approve(request)">Approve Project</button>
+      <div>
+        <div project-request request="request"></div>
+        <button ng-click="approve(request)">Approve Project</button>
       </div>
+      <hr>
     </div>
     <br>
     <b>Status:</b> {{ status_text }}

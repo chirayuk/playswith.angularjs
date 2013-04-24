@@ -407,4 +407,147 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 .icon-trophy:before             { content: "\f091"; }
 .icon-github-sign:before        { content: "\f092"; }
 .icon-upload-alt:before         { content: "\f093"; }
-.icon-lemon:before              { content: "\f094"; }
+.icon-lemon:before              { content: "\f094"; }[ng-cloak] {
+  display: none;
+}
+
+.bwa-label {
+  margin: 0 5px 5px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.bwa-tag {
+  margin-right: 5px;
+}
+
+.badge-important {
+  background-color: #b94a48;
+}
+
+.bwa-neat, .bwa-count {
+  font-size: 32px;
+  line-height: 55px;
+  text-transform: uppercase;
+}
+
+.bwa-btn-group {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.bwa-btn-tags {
+  padding-top: 10px;
+}
+
+.bwa-select-sort {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.bwa-featured {
+  padding-top: 60px;
+}
+
+.bwa-featured img {
+  width: 580px;
+  height: 400px;
+}
+
+.bwa-main-container {
+  min-height: 1400px;
+}
+
+.bwa-featured .bwa-project-well {
+  height: 572px;
+}
+
+.bwa-projects .bwa-project-well {
+  height: 430px;
+}
+.bwa-projects .bwa-project-desc {
+  overflow: hidden;
+  height: 38px;
+  position: relative;
+}
+
+.bwa-projects h2,
+.bwa-featured h2 {
+  margin-top: .5em;
+}
+
+.bwa-featured h2 {
+  font-size: 36px;
+}
+
+.bwa-projects img {
+  width: 420px;
+  height: 290px;
+}
+
+.bwa-img {
+  cursor: pointer;
+}
+
+.bwa-spacer {
+  display: inline-block;
+  width: 6em;
+  height: 1.45em;
+}
+
+bwa-project {
+  display: block;
+}
+
+img.AngularJS-large {
+  width: 270px;
+  height: 70px;
+}
+
+.bwa-lightbox {
+  position: fixed;
+  left: 0;
+  top: 40px;
+  bottom: 0;
+  right: 0;
+  padding: 50px;
+  text-align: center;
+  background: rgba(255, 255, 255, .85);
+  z-index: 2000;
+}
+.modal {
+  width: 900px;
+  margin-left: -450px;
+}
+.modal-body img {
+  width: 580px;
+  height: 400px;
+  padding: 20px;
+}
+.modal-body {
+  text-align: center;
+  max-height: 100%;
+}
+.modal-body p {
+  padding: 20px;
+}
+.modal.fade {
+  top: -150%;
+}
+.modal.fade.in {
+  top: 40%;
+}
+.modal-backdrop {
+  display: none;
+}
+.modal-backdrop.fade.in {
+  display: block;
+}[ng-cloak] {
+  display: none;
+}
+
+
+.pwa-item-label {
+  text-align: right;
+  font-weight: bold;
+}

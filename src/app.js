@@ -195,14 +195,33 @@ directives.projectRequest = function () {
     restrict: "A",
     template: {% filter to_json %}
       <div>
-        <h3>Name: {{request.project.name}}</h3>
-        <p>Description: {{request.project.description}}</p>
-        <p>Submission time: {{request.submission_timestamp | utcTimestampToDate:"medium" }}</p>
-        <p>Website: <a href="{{request.project.url"}}>{{request.project.url}}</a></p>
-        Tags: <ul>
-        <li ng-repeat="tag in request.project.tags">
-          {{tag}}
-        </li>
+        <div class="row">
+          <div class="span2 pwa-item-label">Name</div>
+          <div class="span10" ng-bind-html-unsafe="request.project.name"></div>
+        </div>
+        <div class="row">
+          <div class="span2 pwa-item-label">Description</div>
+          <div class="span10" ng-bind-html-unsafe="request.project.description"></div>
+        </div>
+        <div class="row">
+          <div class="span2 pwa-item-label">Website</div>
+          <div class="span10"><a href="{{request.project.url"}}>{{request.project.url}}</a></div>
+        </div>
+        <div class="row">
+          <div class="span2 pwa-item-label">Tags</div>
+          <div class="span10">
+            <ul>
+              <li ng-repeat="tag in request.project.tags">
+                {{tag}}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2 pwa-item-label">Submission time</div>
+          <div class="span10">{{request.submission_timestamp | utcTimestampToDate:"medium" }}</div>
+        </div>
+        <b>Thumbnail:</b>
         <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
       </div>
       {%- endfilter %},

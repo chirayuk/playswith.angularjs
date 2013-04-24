@@ -32,6 +32,8 @@ def build_all():
       (["src/css/bootstrap.min.css",
         "src/css/docs.css",
         "src/css/font-awesome.css",
+        "src/css/bwa.css",
+        "src/app.css",
        ], "static/playswith.css"),
       ):
     render_templates_to_file(srcs, target)
