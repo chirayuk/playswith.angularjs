@@ -218,12 +218,18 @@ directives.projectRequest = function () {
           </div>
         </div>
         <div class="row">
+          <div class="span2 pwa-item-label">Submitter E-mail</div>
+          <div class="span10">{{request.submitter_email}}</div>
+        </div>
+        <div class="row">
           <div class="span2 pwa-item-label">Submission time</div>
           <div class="span10">{{request.submission_timestamp | utcTimestampToDate:"medium" }}</div>
         </div>
-        <b>Thumbnail:</b>
-        <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
-      </div>
+        <div class="row">
+          <div class="span2 pwa-item-label">Thumbnail</div>
+          <div class="span10" ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}"></div>
+        </div>
+        
       {%- endfilter %},
     scope: {
       request: "="
