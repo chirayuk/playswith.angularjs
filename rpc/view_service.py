@@ -43,6 +43,7 @@ class ViewService(remote.Service):
     # TODO(chirayu):  urlfetch to blobstore and store that url here.
     project_request.project.thumbnail_url = project_request.thumbnail_url
     project_request.submission_timestamp = calendar.timegm(time.gmtime())
+    models.sanitize_project(project_request.project)
     project_request_model = models.ProjectRequestModel(msg=project_request)
     key = project_request_model.put()
     project_request.id = key.urlsafe()

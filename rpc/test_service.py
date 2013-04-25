@@ -64,15 +64,12 @@ def _get_default_projects():
   return [models.Project(**project_dict) for project_dict in projects_json]
 
 def _get_default_projects():
-  try:
-    projects_json = _get_playswith_default_projects_json()
-    return [models.Project(**project_dict) for project_dict in projects_json]
-  except Exception as e:
-    import traceback
-    logger.error("Error: {0} at \n{1}".format(e, traceback.format_exc()))
+  projects_json = _get_playswith_default_projects_json()
+  return [models.Project(**project_dict) for project_dict in projects_json]
 
 
 def _create_project(project):
+  models.sanitize_project(project)
   project_model = models.ProjectModel(msg=project)
   key = project_model.put()
   project.id = key.urlsafe()

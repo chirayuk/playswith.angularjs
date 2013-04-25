@@ -7,6 +7,7 @@ from protorpc.wsgi import service
 import google.appengine.ext.ndb.msgprop
 ndb = google.appengine.ext.ndb
 
+import sanitize
 
 package = "org.angularjs.playswith"
 
@@ -20,6 +21,19 @@ class Project(messages.Message):
   info_url  = messages.StringField(6)
   src_url  = messages.StringField(7)
   thumbnail_url  = messages.StringField(8)
+
+
+def sanitize_project(project):
+  if project.description:
+    project.description = sanitize.sanitize_html(project.description)
+  if project.url:
+    project.url = sanitize.sanitize_url(project.url)
+  if project.info_url:
+    project.info_url = sanitize.sanitize_url(project.info_url)
+  if project.src_url:
+    project.src_url = sanitize.sanitize_url(project.src_url)
+  if project.thumbnail_url:
+    project.thumbnail_url = sanitize.sanitize_url(project.thumbnail_url)
 
 
 class ProjectModel(ndb.Model):

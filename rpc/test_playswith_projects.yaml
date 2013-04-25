@@ -14,7 +14,7 @@
           change your life. No, we can't believe the name
           either.
           <a href="http://karma-runner.github.io/">Karma on
-          GitHub</a
+            GitHub</a>
 
     - name: Batarang
       url: http://blog.angularjs.org/2012/07/introducing-angularjs-batarang.html
@@ -93,7 +93,7 @@
           AngularJS offers minified versions of all of its libraries, but what
           about your code? If you want your code to load quickly, this may be
           the tool for you! <a
-            href="https://github.com/mishoo/UglifyJS">UglifyJS</a
+            href="https://github.com/mishoo/UglifyJS">UglifyJS</a>
 
 - category: Complimentary Libraries
   projects:
@@ -103,7 +103,7 @@
           Though not affiliated with the AngularJS project, Angular UI is the
           largest known collection of open source Angular UI components. A
           great source of examples and many useful techniques. <a
-            href="https://github.com/angular-ui/angular-ui">Angular UI</a
+            href="https://github.com/angular-ui/angular-ui">Angular UI</a>
 
     - name: Bootstrap
       url: http://twitter.github.com/bootstrap/
@@ -112,7 +112,7 @@
           Bootstrap extensively on this site as do many other developers in
           getting a leg up on page layout and starting with sensible defaults
           for all critical CSS bits.  <a
-            href="http://twitter.github.com/bootstrap/">Bootstrap</a
+            href="http://twitter.github.com/bootstrap/">Bootstrap</a>
 
     - name: BreezeJS
       url: http://www.breezejs.com/angular?utm_source=angular&utm_medium=link
@@ -131,7 +131,7 @@
           This project provides a bridge between Angular and the jQuery Mobile
           allowing you to use all the widgets and many utilities from the
           jQuery Mobile library. <a href="https://github.com/tigbro/jquery-mobile-angular-adapter">
-          jQuery Mobile Adapter</a
+          jQuery Mobile Adapter</a>
 
     - name: Wijmo
       url: http://wijmo.com/wiki/index.php/Using_Wijmo_with_AngularJS
@@ -141,4 +141,4 @@
           SVG, Wijmo widgets make your applications suitable for Today's Web.
           Wijmo also has an AngularJS Integration Library that exposes all of
           its widgets as AngularJS components.  <a
-            href="http://wijmo.com/wiki/index.php/Using_Wijmo_with_AngularJS">wijmo.com</a
+            href="http://wijmo.com/wiki/index.php/Using_Wijmo_with_AngularJS">wijmo.com</a>
