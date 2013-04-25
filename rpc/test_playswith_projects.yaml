@@ -1,0 +1,144 @@
+- category: Development
+  projects:
+    - name: Karma
+      url: http://karma-runner.github.io/
+      description: |
+          Karma runs your unit tests faster than any other
+          tool we know.  The 1K+ AngularJS tests run in ~3
+          seconds. It runs tests every time you save. It
+          runs tests on real browsers including Android
+          and iOS.  It integrates with WebStorm's
+          debugger. It works with any test framework, but
+          comes with specific support for Jasmine and
+          Mocha, and AngularJS' scenario runner. It will
+          change your life. No, we can't believe the name
+          either.
+          <a href="http://karma-runner.github.io/">Karma on
+          GitHub</a
+
+    - name: Batarang
+      url: http://blog.angularjs.org/2012/07/introducing-angularjs-batarang.html
+      description: |
+          Want to see which elements have data bindings, the inheritance tree
+          for your scopes, which $watch expressions need optimization and a
+          dependency graph for your app, all in the Chrome development tools
+          pane? Well then, the AngularJS debugger extension could be for you.
+          You can learn more about it in this <a href="http://blog.angularjs.org/2012/07/introducing-angularjs-batarang.html">
+          blog post</a> and install it from the <a href="https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk">
+          Chrome Web Store</a>. 
+
+    - name: Yeoman
+      url: http://yeoman.io
+      description: |
+          Yeoman is the swiss-army knife of command-line tools you'll need to
+          build a production-ready web application. The list of features is
+          extensive and includes scaffolding, compiling (CoffeeScript,
+          Compass), linting, package management, and the list goes on. We've
+          worked with the Yeoman team to create Angular-specific support. Check
+          out our <a href="http://briantford.com/blog/angular-yeoman.html">
+          blog post</a> and <a href="http://www.youtube.com/watch?v=XOmwZopzcTA">video</a>
+          for using Yeoman with Angular and the main project page at
+          <a href="http://yeoman.io">yeoman.io</a>. 
+
+    - name: WebStorm
+      url: https://github.com/angularjs-livetpls/angularjs-webstorm-livetpls
+      description: |
+          WebStorm offers an Angular syntax-aware plugin for their nifty
+          editor. Get it at their <a
+            href="http://plugins.jetbrains.net/plugin?pr=webide&amp;pluginId=6971">plugin
+            download site</a> or directly within WebStorm's preferences. There
+          is also a separate set of LiveTemplates for Angular on <a
+            href="https://github.com/angularjs-livetpls/angularjs-webstorm-livetpls">this
+            GitHub repo</a>. 
+
+    - name: Sublime Text
+      url: https://github.com/EastPoint/Sublime-AngularJS-Coffee-Completions
+      description: |
+          Use CoffeeScript and the Sublime Text editor? Then check out this
+          extensive set of key-completion snippets as a <a
+            href="https://github.com/EastPoint/Sublime-AngularJS-Coffee-Completions">Sublime
+            keymap</a>. 
+
+- category: Deployment
+  projects:
+    - name: PhoneGap
+      url: http://phonegap.com
+      description: |
+          Want to build installable mobile apps for Android, iOS and others?
+          Okay, so there's no specific support for Angular in PhoneGap, but
+          they work just great together. More at <a
+            href="http://phonegap.com">phonegap.com</a
+
+          Oh, but if you do want slick animations between views on mobile, you
+          might check out the <a
+            href="https://github.com/ajoslin/angular-mobile-nav">Angular Mobile
+            Nav</a> library. 
+
+    - name: Chrome Packaged Apps
+      url: https://github.com/GoogleChrome/chrome-app-codelab
+      description: |
+          Packaged apps in Chrome let you create desktop-like applications that
+          get delivered like web pages. They can have native-like features like
+          accessing the file system, hardware devices, etc. In short, the sky's
+          the limit in what they can do. There's a <a
+            href="http://developer.chrome.com/trunk/apps/angular_framework.html">
+            guide to getting started</a> building packaged apps with Angular
+          and an <a
+            href="https://github.com/GoogleChrome/chrome-app-codelab">Angular
+            code lab</a> to expand on these basic concepts. 
+
+    - name: UglifyJS
+      url: https://github.com/mishoo/UglifyJS
+      description: |
+          AngularJS offers minified versions of all of its libraries, but what
+          about your code? If you want your code to load quickly, this may be
+          the tool for you! <a
+            href="https://github.com/mishoo/UglifyJS">UglifyJS</a
+
+- category: Complimentary Libraries
+  projects:
+    - name: Angular UI
+      url: https://github.com/angular-ui/angular-ui
+      description: |
+          Though not affiliated with the AngularJS project, Angular UI is the
+          largest known collection of open source Angular UI components. A
+          great source of examples and many useful techniques. <a
+            href="https://github.com/angular-ui/angular-ui">Angular UI</a
+
+    - name: Bootstrap
+      url: http://twitter.github.com/bootstrap/
+      description: |
+          Okay, another one with no specific linkage to Angular, but we use
+          Bootstrap extensively on this site as do many other developers in
+          getting a leg up on page layout and starting with sensible defaults
+          for all critical CSS bits.  <a
+            href="http://twitter.github.com/bootstrap/">Bootstrap</a
+
+    - name: BreezeJS
+      url: http://www.breezejs.com/angular?utm_source=angular&utm_medium=link
+      description: |
+          For folks who want client-side data management, BreezeJS provides and
+          extensive set of client-side features like filtering, ordering, and
+          paging, and much more to let you mirror your server-side model
+          manipulation on in the web client. They've put together some good
+          examples on how to get started combining with Angular on the <a
+            href="http://www.breezejs.com/angular?utm_source=angular&amp;utm_medium=link">BreezeJS
+            site</a>. 
+
+    - name: jQuery Mobile
+      url: https://github.com/tigbro/jquery-mobile-angular-adapter
+      description: |
+          This project provides a bridge between Angular and the jQuery Mobile
+          allowing you to use all the widgets and many utilities from the
+          jQuery Mobile library. <a href="https://github.com/tigbro/jquery-mobile-angular-adapter">
+          jQuery Mobile Adapter</a
+
+    - name: Wijmo
+      url: http://wijmo.com/wiki/index.php/Using_Wijmo_with_AngularJS
+      description: |
+          Wijmo is a complete kit of over 40 UI widgets with everything from
+          interactive menus to rich charts. Built with HTML5, jQuery, CSS3, and
+          SVG, Wijmo widgets make your applications suitable for Today's Web.
+          Wijmo also has an AngularJS Integration Library that exposes all of
+          its widgets as AngularJS components.  <a
+            href="http://wijmo.com/wiki/index.php/Using_Wijmo_with_AngularJS">wijmo.com</a

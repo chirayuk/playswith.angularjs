@@ -21,6 +21,7 @@ sanitize_url_test_cases = (
     (u"http://www.google.com/%22%3Cscript%3E", u"http://www.google.com/\"<script>"),
     # Closing a quote and starting a script tag in the path.
     (u"http://%22%3cscript%3e/", u"http://\"<script>/"),
+    (u"CKCK", u"http://example.com/[0xFC]"),
   )
 
 def sanitize_url_and_assert(expected_url, given_url):

@@ -28,7 +28,6 @@ class ProjectModel(ndb.Model):
       indexed_fields=[
           "id",
           "name",
-          "description",
           "tags",
           ]
       )
@@ -49,7 +48,6 @@ class ProjectRequestModel(ndb.Model):
       indexed_fields=[
           "project.id",
           "project.name",
-          "project.description",
           "project.tags",
           "submitter_email",
           ]
