@@ -50,7 +50,8 @@ def _sanitize_nodes(nodes, buffer):
         buffer.write(markupsafe.escape(node.text))
         _sanitize_nodes(node.getchildren(), buffer)
         buffer.write(u"</a>")
-      buffer.write(markupsafe.escape(node.tail))
+      if node.tail:
+        buffer.write(markupsafe.escape(node.tail))
     else:
       buffer.write(markupsafe.escape(node.tail))
 

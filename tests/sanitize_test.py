@@ -21,7 +21,6 @@ sanitize_url_test_cases = (
     (u"http://www.google.com/%22%3Cscript%3E", u"http://www.google.com/\"<script>"),
     # Closing a quote and starting a script tag in the path.
     (u"http://%22%3cscript%3e/", u"http://\"<script>/"),
-    (u"CKCK", u"http://example.com/[0xFC]"),
   )
 
 def sanitize_url_and_assert(expected_url, given_url):
@@ -40,6 +39,8 @@ sanitize_html_test_cases = (
     # Closing unopened tags.
     (u"hello world", u"</html></span>hello<div>there</div>world"),
     # Test some urls.
+    (u"hello world <a href=\"http://www.google.com/\">google</a>",
+     u"hello world <a href=\"http://www.google.com\">google</a>"),
     (u"hello world <a href=\"http://www.google.com/\">google</a>.",
      u"hello world <a href=\"http://www.google.com\">google</a>."),
     # Other attribs on a tags should be stripped.
