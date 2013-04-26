@@ -4,9 +4,11 @@ import calendar
 import datetime
 import io
 import logging
+import os
 import time
 import yaml
 
+from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
 
@@ -22,7 +24,16 @@ class Error(Exception):
   pass
 
 
-def _builtwith_project_json_to_project(project_json):
+class DebugDump(messages.Message):
+  text = messages.StringField(1)
+
+def _get_root_url():
+  assert "HTTP_HOST" in os.environ and "HTTPS" in os.environ
+  host = os.environ["HTTP_HOST"]
+  scheme = ("http", "https")[os.environ["HTTPS"] == "on"]
+  return "{0}://{1}".format(scheme, host)
+
+def _builtwith_project_json_to_project(project_json, root_url):
   # The json format is a modified version of the one from
   # builtwith.angularjs.org and contains fields some fields such as submission
   # date that are part of the request.  Remove those.
@@ -37,14 +48,16 @@ def _builtwith_project_json_to_project(project_json):
   rename_field("src", "src_url")
   rename_field("info", "info_url")
   # thumbnail urls are relative.  Translate them.
-  project_json["thumbnail_url"] = "/static/img/projects/{0}".format(
-      project_json["thumbnail_url"])
+  project_json["thumbnail_url"] = "{0}/static/img/projects/{1}".format(
+      root_url, project_json["thumbnail_url"])
   return project_json
 
 def _get_builtwith_default_projects_json():
   with io.open("rpc/test_projects.json", "rt", encoding="utf8") as f:
     builtwith_json = yaml.load(f)
-  projects_json = map(_builtwith_project_json_to_project, builtwith_json["projects"])
+  root_url = _get_root_url()
+  projects_json = [_builtwith_project_json_to_project(project, root_url)
+                   for project in builtwith_json["projects"]]
   return projects_json
 
 def _get_playswith_default_projects_json():
@@ -59,12 +72,10 @@ def _get_playswith_default_projects_json():
       projects_json.append(project_dict)
   return projects_json
 
-def _get_default_projects():
-  projects_json = _get_builtwith_default_projects_json()
-  return [models.Project(**project_dict) for project_dict in projects_json]
 
 def _get_default_projects():
-  projects_json = _get_playswith_default_projects_json()
+  projects_json = (_get_playswith_default_projects_json() +
+                   _get_builtwith_default_projects_json())
   return [models.Project(**project_dict) for project_dict in projects_json]
 
 
@@ -77,6 +88,13 @@ def _create_project(project):
 
 
 class TestService(remote.Service):
+  @remote.method(message_types.VoidMessage, DebugDump)
+  def debug_dump(self, request):
+    import os, pprint
+    text=pprint.pformat(sorted(os.environ.items()))
+    print text
+    return DebugDump(text=text)
+
   # Bootstrap some sample projects.
   @remote.method(message_types.VoidMessage, message_types.VoidMessage)
   def create_test_projects(self, request):
