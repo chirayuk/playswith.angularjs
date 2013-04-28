@@ -1,7 +1,7 @@
 {% import "src/utils.jinja" as utils -%}
 
 function load_projects($scope, $http) {
-  var url = "/rpc/view.get_project_list";
+  var url = "/rpc/project.get_project_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
@@ -16,7 +16,7 @@ function load_projects($scope, $http) {
 
 
 function load_project_requests($scope, $http) {
-  var url = "/rpc/view.get_project_request_list";
+  var url = "/rpc/project.get_project_request_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
@@ -42,7 +42,6 @@ playsWith.filter("utcTimestampToDate", function ($filter) {
 });
 
 
-
 playsWith.controller("homepageController", function ($scope, $http) {
   $scope.projects = load_projects($scope, $http);
 });
@@ -54,7 +53,7 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
   load_project_requests($scope, $http);
 
   $scope.approve = function(request) {
-    var url = "/rpc/view.approve_project_request";
+    var url = "/rpc/project.approve_project_request";
     $scope.status_text = "Approving ...";
     console.log("%O", request);
     $http({method: "POST", url: url, data: request }).
@@ -108,7 +107,7 @@ directives.newProjectRequest = function () {
       $scope.status_text = "Not yet submitted.";
 
       $scope.addToPending = function() {
-        var url = "/rpc/view.create_project_request";
+        var url = "/rpc/project.create_project_request";
         $scope.status_text = "Submitting ...";
         console.log("%O", $scope.request);
         // TODO(chirayu): Better way of getting tags.  UI should have some kind of

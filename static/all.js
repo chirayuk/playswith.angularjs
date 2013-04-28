@@ -171,7 +171,7 @@ d,e){var g=d.parent(),m=g.data("$selectController")||g.parent().data("$selectCon
 v;(function(a){y(a,{bootstrap:vb,copy:W,extend:y,equals:ja,element:v,forEach:o,injector:wb,noop:t,bind:ab,toJson:da,fromJson:tb,identity:pa,isUndefined:u,isDefined:w,isString:x,isFunction:I,isObject:L,isNumber:Za,isElement:jc,isArray:C,version:md,isDate:qa,lowercase:J,uppercase:na,callbacks:{counter:0},noConflict:gc});xa=oc(M);try{xa("ngLocale")}catch(c){xa("ngLocale",[]).provider("$locale",cd)}xa("ng",["ngLocale"],["$provide",function(a){a.provider("$compile",Hb).directive({a:od,input:dc,textarea:dc,
 form:pd,script:Xd,select:Zd,style:ae,option:$d,ngBind:Ad,ngBindHtmlUnsafe:Cd,ngBindTemplate:Bd,ngClass:Dd,ngClassEven:Fd,ngClassOdd:Ed,ngCsp:Id,ngCloak:Gd,ngController:Hd,ngForm:qd,ngHide:Qd,ngInclude:Kd,ngInit:Ld,ngNonBindable:Md,ngPluralize:Nd,ngRepeat:Od,ngShow:Pd,ngSubmit:Jd,ngStyle:Rd,ngSwitch:Sd,ngSwitchWhen:Td,ngSwitchDefault:Ud,ngOptions:Yd,ngView:Wd,ngTransclude:Vd,ngModel:vd,ngList:xd,ngChange:wd,required:ec,ngRequired:ec,ngValue:zd}).directive(qb).directive(fc);a.provider({$anchorScroll:xc,
 $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document:Ec,$exceptionHandler:Fc,$filter:Tb,$interpolate:Gc,$http:Zc,$httpBackend:$c,$location:Kc,$log:Lc,$parse:Pc,$route:Sc,$routeParams:Tc,$rootScope:Uc,$q:Qc,$sniffer:Vc,$templateCache:Bc,$timeout:dd,$window:Wc})}])})(Ia);v(V).ready(function(){mc(V,vb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');function load_projects($scope, $http) {
-  var url = "/rpc/view.get_project_list";
+  var url = "/rpc/project.get_project_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
@@ -186,7 +186,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
 
 
 function load_project_requests($scope, $http) {
-  var url = "/rpc/view.get_project_request_list";
+  var url = "/rpc/project.get_project_request_list";
   $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           $scope.status = status;
@@ -212,7 +212,6 @@ playsWith.filter("utcTimestampToDate", function ($filter) {
 });
 
 
-
 playsWith.controller("homepageController", function ($scope, $http) {
   $scope.projects = load_projects($scope, $http);
 });
@@ -224,7 +223,7 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
   load_project_requests($scope, $http);
 
   $scope.approve = function(request) {
-    var url = "/rpc/view.approve_project_request";
+    var url = "/rpc/project.approve_project_request";
     $scope.status_text = "Approving ...";
     console.log("%O", request);
     $http({method: "POST", url: url, data: request }).
@@ -268,7 +267,7 @@ directives.newProjectRequest = function () {
       $scope.status_text = "Not yet submitted.";
 
       $scope.addToPending = function() {
-        var url = "/rpc/view.create_project_request";
+        var url = "/rpc/project.create_project_request";
         $scope.status_text = "Submitting ...";
         console.log("%O", $scope.request);
         // TODO(chirayu): Better way of getting tags.  UI should have some kind of

@@ -29,7 +29,7 @@ def get_project_request_by_id(project_request_id):
     return project_request
 
 
-class ViewService(remote.Service):
+class ProjectService(remote.Service):
   @remote.method(message_types.VoidMessage, models.ProjectList)
   def get_project_list(self, request):
     query = models.ProjectModel.query()
