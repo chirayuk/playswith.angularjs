@@ -2,6 +2,7 @@
 
 import config
 import flask
+import mimetypes
 from google.appengine.ext import blobstore
 import google.appengine.ext.ndb
 
@@ -21,10 +22,13 @@ def serve_blob(encoded_image_info):
   encoded_image_info = encoded_image_info.rsplit(".", 1)[0]
   # Decode to ImageInfo.
   image_info = image_utils.decode_image_info(encoded_image_info)
+  filename = "image{0}".format(
+      mimetypes.guess_extension(image_info.mimetype))
+  content_disposition = "attachment; filename=\"{0}\"".format(filename)
   headers = {
     blobstore.BLOB_KEY_HEADER: image_info.blobkey_str,
     "Content-Type": image_info.mimetype,
-    "Content-Disposition": "attachment; filename=\"image.png\"",
+    "Content-Disposition": content_disposition,
     "X-Content-Type-Options": "nosniff",
     }
   return (u"", 200, headers)
