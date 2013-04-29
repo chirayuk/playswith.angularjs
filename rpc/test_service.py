@@ -33,7 +33,7 @@ def _get_root_url():
   scheme = ("http", "https")[os.environ["HTTPS"] == "on"]
   return "{0}://{1}".format(scheme, host)
 
-def _builtwith_project_json_to_project(project_json, root_url):
+def _builtwith_project_json_to_project(project_json):
   # The json format is a modified version of the one from
   # builtwith.angularjs.org and contains fields some fields such as submission
   # date that are part of the request.  Remove those.
@@ -48,15 +48,14 @@ def _builtwith_project_json_to_project(project_json, root_url):
   rename_field("src", "src_url")
   rename_field("info", "info_url")
   # thumbnail urls are relative.  Translate them.
-  project_json["thumbnail_url"] = "{0}/static/img/projects/{1}".format(
-      root_url, project_json["thumbnail_url"])
+  project_json["thumbnail_url"] = "/static/img/projects/{0}".format(
+      project_json["thumbnail_url"])
   return project_json
 
 def _get_builtwith_default_projects_json():
   with io.open("rpc/test_projects.json", "rt", encoding="utf8") as f:
     builtwith_json = yaml.load(f)
-  root_url = _get_root_url()
-  projects_json = [_builtwith_project_json_to_project(project, root_url)
+  projects_json = [_builtwith_project_json_to_project(project)
                    for project in builtwith_json["projects"]]
   return projects_json
 

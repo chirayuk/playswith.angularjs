@@ -12,6 +12,9 @@ app = wsgi_app = flask.Flask(__name__)
 jinja_env = config.jinja_env
 
 
+CACHE_MAX_AGE = 364*86400
+CACHE_CONTROL_MAXCACHE = "public, max-age={0}".format(CACHE_MAX_AGE)
+
 # We save on a db hit by decoding the signed url to directly extract the
 # blobkey and mimetype.
 # We are hosting third party images so we try to be a little secure with some
@@ -30,6 +33,10 @@ def serve_blob(encoded_image_info):
     "Content-Type": image_info.mimetype,
     "Content-Disposition": content_disposition,
     "X-Content-Type-Options": "nosniff",
+    # Caching headers.
+    "ETag": "static",
+    "Last-Modified": "Fri, 01 Jan 1990 00:00:00 GMT",
+    "Cache control": CACHE_CONTROL_MAXCACHE,
     }
   return (u"", 200, headers)
 
