@@ -32,8 +32,9 @@ def sanitize_project(project):
     project.info_url = sanitize.sanitize_url(project.info_url)
   if project.src_url:
     project.src_url = sanitize.sanitize_url(project.src_url)
-  if project.thumbnail_url:
-    project.thumbnail_url = sanitize.sanitize_url(project.thumbnail_url)
+  # Thumbnail URLs should always point back to our server.
+  if project.thumbnail_url and not project.thumbnail_url.startswith("/"):
+    project.thumbnail_url = None
 
 
 class ProjectModel(ndb.Model):

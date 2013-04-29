@@ -228,7 +228,7 @@ directives.projectRequest = function () {
         </div>
         <div class="row">
           <div class="span2 pwa-item-label">Thumbnail</div>
-          <div class="span10" ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}"></div>
+          <div class="span10" ng-show="request.project.thumbnail_url"><img ng-src="{{request.project.thumbnail_url}}"></div>
         </div>
         
       {%- endfilter %},
