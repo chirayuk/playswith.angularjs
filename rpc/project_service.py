@@ -15,6 +15,7 @@ import google.appengine.ext.ndb.msgprop
 ndb = google.appengine.ext.ndb
 
 import models
+from . import image_service
 
 package = "org.angularjs.playswith"
 
@@ -41,6 +42,9 @@ class ProjectService(remote.Service):
     project_request.id = None
     project_request.project.id = None
     # TODO(chirayu):  urlfetch to blobstore and store that url here.
+
+    image_service.store_image_in_blobstore(project_request.thumbnail_url)
+
     project_request.project.thumbnail_url = project_request.thumbnail_url
     project_request.submission_timestamp = calendar.timegm(time.gmtime())
     models.sanitize_project(project_request.project)

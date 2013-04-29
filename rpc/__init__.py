@@ -1,5 +1,9 @@
 # -*- coding: UTF-8 -*-
 
+import logging
+logger = logging.getLogger(__name__)
+import traceback
+
 from protorpc.wsgi import service
 from protorpc.webapp import forms
 
