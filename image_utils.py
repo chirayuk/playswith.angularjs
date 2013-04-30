@@ -39,12 +39,6 @@ def encode_image_info(image_info):
   text = "{0}.{1}".format(
       image_info.blobkey,
       urllib.quote_plus(image_info.mimetype))
-  #ckck
-  logger.warn("encode_image_info:\n blobkey={0},\n mimetype={1},\n text={2}, \n signed={3}".format(
-      image_info.blobkey,
-      image_info.mimetype,
-      text,
-      sign.default_signer.sign(text)))
   return sign.default_signer.sign(text)
 
 @utils.log_exceptions

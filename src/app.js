@@ -49,8 +49,8 @@ playsWith.controller("homepageController", function ($scope, $http) {
 
 playsWith.controller("projectRequestsController", function ($scope, $http) {
   $scope.requests = [];
+  console.log("CKCK: projectRequestsController: Controller is being created.");
   load_project_requests($scope, $http);
-
 });
 
 var directives = playsWith.directives = {};
@@ -429,7 +429,7 @@ directives.projectRequestWithEdit = function () {
           <div edit-project-request request="request" on-update="doneEditing()"></div>
         </div>
         <div ng-switch-when="display">
-          <div ng-controller="projectRequestsController" project-request request="request"></div><br>
+          <div project-request request="request"></div><br>
           <div class="center">
             <a ng-click="approve(request)" class="btn btn-primary"><i class="icon-ok icon-large"></i>
               Approve

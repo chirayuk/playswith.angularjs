@@ -47,8 +47,8 @@ playsWith.controller("homepageController", function ($scope, $http) {
 
 playsWith.controller("projectRequestsController", function ($scope, $http) {
   $scope.requests = [];
+  console.log("CKCK: projectRequestsController: Controller is being created.");
   load_project_requests($scope, $http);
-
 });
 
 var directives = playsWith.directives = {};
@@ -240,7 +240,7 @@ directives.projectRequestWithEdit = function () {
       $scope.status_text = "Not yet submitted.";
     },
 
-    template: "\n      <div ng-switch on=\"mode\">\n        <div ng-switch-when=\"approved\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-success\">Approved!</span>\n        </div>\n        <div ng-switch-when=\"rejected\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-warning\">Rejected!</span>\n        </div>\n        <div ng-switch-when=\"edit\">\n          <div edit-project-request request=\"request\" on-update=\"doneEditing()\"></div>\n        </div>\n        <div ng-switch-when=\"display\">\n          <div ng-controller=\"projectRequestsController\" project-request request=\"request\"></div><br>\n          <div class=\"center\">\n            <a ng-click=\"approve(request)\" class=\"btn btn-primary\"><i class=\"icon-ok icon-large\"></i>\n              Approve\n            </a>\n            <a ng-click=\"reject(request)\" class=\"btn btn-danger\"><i class=\"icon-trash icon-large\"></i>\n              Reject\n            </a>\n            <a ng-click=\"edit(request)\" class=\"btn btn-info\"><i class=\"icon-pencil icon-large\"></i>\n              Edit\n            </a>\n          </div>\n          <br>\n          <b>Status:</b> {{ status_text }}\n        </div>\n      </div>"
+    template: "\n      <div ng-switch on=\"mode\">\n        <div ng-switch-when=\"approved\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-success\">Approved!</span>\n        </div>\n        <div ng-switch-when=\"rejected\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-warning\">Rejected!</span>\n        </div>\n        <div ng-switch-when=\"edit\">\n          <div edit-project-request request=\"request\" on-update=\"doneEditing()\"></div>\n        </div>\n        <div ng-switch-when=\"display\">\n          <div project-request request=\"request\"></div><br>\n          <div class=\"center\">\n            <a ng-click=\"approve(request)\" class=\"btn btn-primary\"><i class=\"icon-ok icon-large\"></i>\n              Approve\n            </a>\n            <a ng-click=\"reject(request)\" class=\"btn btn-danger\"><i class=\"icon-trash icon-large\"></i>\n              Reject\n            </a>\n            <a ng-click=\"edit(request)\" class=\"btn btn-info\"><i class=\"icon-pencil icon-large\"></i>\n              Edit\n            </a>\n          </div>\n          <br>\n          <b>Status:</b> {{ status_text }}\n        </div>\n      </div>"
   };
 };
 
