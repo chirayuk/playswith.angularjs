@@ -12,7 +12,9 @@ from google.appengine.ext import blobstore
 
 package = "org.angularjs.playswith"
 
+import serialize
 import sign
+import utils
 
 class Error(Exception):
   pass
@@ -27,17 +29,25 @@ JPEG_FILE_SUFFIX = b"\xFF\xD9"
 
 
 class ImageInfo(messages.Message):
-  blobkey_str = messages.StringField(1)
+  blobkey = messages.StringField(1)
   mimetype = messages.StringField(2)
 
 
+@utils.log_exceptions
 def encode_image_info(image_info):
-  return sign.default_serializer.dumps(protobuf.encode_message(image_info))
+  text = "{0}{1}".format(
+      image_info.blobkey,
+      mimetypes.guess_extension(image_info.mimetype))
+  return sign.default_signer.sign(text)
 
+@utils.log_exceptions
 def decode_image_info(blob):
-  serialized_protobuf = sign.default_serializer.loads(blob)
-  return protobuf.decode_message(ImageInfo, serialized_protobuf)
+  text = sign.default_signer.unsign(blob)
+  blobkey, extension = text.rsplit(".", 1)
+  mimetype = mimetypes.types_map["." + extension]
+  return ImageInfo(blobkey=blobkey, mimetype=mimetype)
 
+@utils.log_exceptions
 def load_image_from_url(url):
   response = urlfetch.fetch(url, deadline=30)
   assert isinstance(response.content, bytes)
@@ -48,6 +58,7 @@ def load_image_from_url(url):
   return response
 
 
+@utils.log_exceptions
 def guess_mimetype_from_url(url):
   path_part = urlparse.urlparse(url).path
   mimetype, unused_encoding = mimetypes.guess_type(path_part)
@@ -61,6 +72,7 @@ def guess_mimetype_from_url(url):
 # the acutal content.  We want to ensure that we only serve a matching content
 # type.  For now, we try to stay safe by only supporting png and jpeg via
 # explicit magic number checks.
+@utils.log_exceptions
 def guess_mimetype_from_contents(blob):
   if blob.startswith(PNG_FILE_PREFIX):
     return "image/png"
@@ -72,6 +84,7 @@ def guess_mimetype_from_contents(blob):
 
 # TODO(chirayu):  Dedupe by sha1's or something.  Or will it not matter?
 # Returns a blobkey corresponding to the saved image.
+@utils.log_exceptions
 def save_image_to_blobstore(url):
   image_bytes = load_image_from_url(url).content
   mimetype = guess_mimetype_from_contents(image_bytes)
@@ -79,16 +92,17 @@ def save_image_to_blobstore(url):
     raise Error("Could not determine mime type.  "
                 "Only png and jpeg files are allowed.")
   blobstore_filename = files.blobstore.create(mime_type=mimetype)
-  with files.open(blobstore_filename, 'a') as f:
+  with files.open(blobstore_filename, 'ab') as f:
       f.write(image_bytes)
   files.finalize(blobstore_filename)
   blob_key = files.blobstore.get_blob_key(blobstore_filename)
   image_info = ImageInfo(
-      blobkey_str=str(blob_key),
+      blobkey=str(blob_key),
       mimetype=mimetype)
   return image_info
 
 
+@utils.log_exceptions
 def make_image_url(image_info):
   image_url = "/serve_blob/{0}{1}".format(
       encode_image_info(image_info),

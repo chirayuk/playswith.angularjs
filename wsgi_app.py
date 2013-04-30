@@ -29,7 +29,7 @@ def serve_blob(encoded_image_info):
       mimetypes.guess_extension(image_info.mimetype))
   content_disposition = "attachment; filename=\"{0}\"".format(filename)
   headers = {
-    blobstore.BLOB_KEY_HEADER: image_info.blobkey_str,
+    blobstore.BLOB_KEY_HEADER: image_info.blobkey,
     "Content-Type": image_info.mimetype,
     "Content-Disposition": content_disposition,
     "X-Content-Type-Options": "nosniff",
