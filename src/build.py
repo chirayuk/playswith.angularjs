@@ -31,7 +31,7 @@ def build_all():
       ("src/create_project.html", "static/create_project.html"),
       (["src/css/bootstrap.min.css",
         "src/css/docs.css",
-        "src/css/font-awesome.css",
+        "src/css/font-awesome.min.css",
         "src/css/bwa.css",
         "src/app.css",
        ], "static/playswith.css"),

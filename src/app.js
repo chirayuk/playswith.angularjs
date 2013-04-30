@@ -148,6 +148,7 @@ directives.editProjectRequest = function () {
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
+      $scope.in_progress = false;
       $scope.status_text = "Not yet submitted.";
 
       $scope.getSubmitButtonText = function() {
@@ -171,8 +172,11 @@ directives.editProjectRequest = function () {
         $scope.status_text = "Saving ...";
         console.log("%O", $scope.request);
         $scope.submit_disabled = true;
+        $scope.in_progress = true;
         $http({method: "POST", url: url, data: $scope.request }).
             success(function(request, status) {
+                $scope.submit_disabled = false;
+                $scope.in_progress = false;
                 $scope.status = status;
                 angular.copy(request, $scope.request);
                 console.log("saveChanges: request with id = %O", request);
@@ -180,9 +184,10 @@ directives.editProjectRequest = function () {
                 $scope.onUpdate();
               }).
             error(function(data, status) {
+                $scope.submit_disabled = false;
+                $scope.in_progress = false;
                 $scope.status = status;         
                 $scope.status_text = "Failed.";
-                $scope.submit_disabled = false;
               });
       }
     },
@@ -235,7 +240,10 @@ directives.editProjectRequest = function () {
               </div>
           </div>
           <div class="form-actions">
-            <button ng-click="saveChanges()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">{{getSubmitButtonText()}}</button>
+            <button ng-click="saveChanges()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">
+              {{getSubmitButtonText()}}
+            </button>
+            <span ng-show="in_progress">&nbsp;&nbsp;<i class="icon-spinner icon-spin"></i></span>
           </div>
         </form>
         <div class="span4 offset1">
