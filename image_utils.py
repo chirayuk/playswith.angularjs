@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 import mimetypes
 import urlparse
+import urllib
 
 from protorpc import messages, protobuf
 from google.appengine.api import urlfetch
@@ -35,17 +36,31 @@ class ImageInfo(messages.Message):
 
 @utils.log_exceptions
 def encode_image_info(image_info):
-  text = "{0}{1}".format(
+  text = "{0}.{1}".format(
       image_info.blobkey,
-      mimetypes.guess_extension(image_info.mimetype))
+      urllib.quote_plus(image_info.mimetype))
+  #ckck
+  logger.warn("encode_image_info:\n blobkey={0},\n mimetype={1},\n text={2}, \n signed={3}".format(
+      image_info.blobkey,
+      image_info.mimetype,
+      text,
+      sign.default_signer.sign(text)))
   return sign.default_signer.sign(text)
 
 @utils.log_exceptions
 def decode_image_info(blob):
   text = sign.default_signer.unsign(blob)
-  blobkey, extension = text.rsplit(".", 1)
-  mimetype = mimetypes.types_map["." + extension]
+  blobkey, mimetype_urlsafe = text.rsplit(".", 1)
+  mimetype = urllib.unquote_plus(mimetype_urlsafe)
   return ImageInfo(blobkey=blobkey, mimetype=mimetype)
+
+@utils.log_exceptions
+def make_image_url(image_info):
+  image_url = "/serve_blob/{0}{1}".format(
+      encode_image_info(image_info),
+      mimetypes.guess_extension(image_info.mimetype))
+  return image_url
+
 
 @utils.log_exceptions
 def load_image_from_url(url):
@@ -100,11 +115,3 @@ def save_image_to_blobstore(url):
       blobkey=str(blob_key),
       mimetype=mimetype)
   return image_info
-
-
-@utils.log_exceptions
-def make_image_url(image_info):
-  image_url = "/serve_blob/{0}{1}".format(
-      encode_image_info(image_info),
-      mimetypes.guess_extension(image_info.mimetype))
-  return image_url

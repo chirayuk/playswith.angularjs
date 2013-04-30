@@ -59,12 +59,15 @@ class ProjectService(remote.Service):
     # TODO(chirayu): Add history entry.
     project_request_model = get_project_request_by_id(project_request.id)
     orig_thumbnail_url = project_request_model.msg.project.thumbnail_url
-    thumbnail_url = project_request.thumbnail_url
-    if thumbnail_url and thumbnail_url != orig_thumbnail_url:
-      image_info = image_utils.save_image_to_blobstore(project_request.thumbnail_url)
-      thumbnail_url = image_utils.make_image_url(image_info)
-      project_request.project.thumbnail_url = thumbnail_url
-      project_request.thumbnail_url = thumbnail_url
+    new_thumbnail_url = project_request.thumbnail_url
+    if not new_thumbnail_url:
+      project_request_model.msg.project.thumbnail_url = None
+      project_request_model.msg.thumbnail_url = None
+    elif new_thumbnail_url != orig_thumbnail_url:
+      image_info = image_utils.save_image_to_blobstore(new_thumbnail_url)
+      saved_thumbnail_url = image_utils.make_image_url(image_info)
+      project_request.project.thumbnail_url = saved_thumbnail_url
+      project_request.thumbnail_url = saved_thumbnail_url
     project_request.submission_timestamp = calendar.timegm(time.gmtime())
     models.sanitize_project(project_request.project)
     project_request_model.msg = project_request

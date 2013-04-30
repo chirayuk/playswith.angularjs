@@ -15,4 +15,4 @@ SIGNING_KEY = ""
 
 
 # Default signer object.
-default_signer = itsdangerous.Signer(SIGNING_KEY, sep="-", key_derivation="hmac")
+default_signer = itsdangerous.Signer(SIGNING_KEY, sep=".", key_derivation="hmac")

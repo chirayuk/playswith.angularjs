@@ -233,7 +233,7 @@ directives.editProjectRequest = function () {
         $http({method: "POST", url: url, data: $scope.request }).
             success(function(request, status) {
                 $scope.status = status;
-                $scope.request = request;
+                angular.copy(request, $scope.request);
                 console.log("saveChanges: request with id = %O", request);
                 $scope.status_text = "Success!";
                 $scope.onUpdate();
@@ -385,7 +385,6 @@ directives.projectRequestWithEdit = function () {
             success(function(request, status) {
                 $scope.status = status;
                 console.log("Approved request: %O", request);
-                load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
                 $scope.mode = "approved";
               }).
@@ -403,7 +402,6 @@ directives.projectRequestWithEdit = function () {
             success(function(request, status) {
                 $scope.status = status;
                 console.log("Rejected request: %O", request);
-                load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
                 $scope.mode = "rejected";
               }).
