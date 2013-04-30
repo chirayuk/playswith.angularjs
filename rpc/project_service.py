@@ -54,6 +54,24 @@ class ProjectService(remote.Service):
     project_request.id = key.urlsafe()
     return project_request
 
+  @remote.method(models.ProjectRequest, models.ProjectRequest)
+  def update_project_request(self, project_request):
+    # TODO(chirayu): Add history entry.
+    project_request_model = get_project_request_by_id(project_request.id)
+    orig_thumbnail_url = project_request_model.msg.project.thumbnail_url
+    thumbnail_url = project_request.thumbnail_url
+    if thumbnail_url and thumbnail_url != orig_thumbnail_url:
+      image_info = image_utils.save_image_to_blobstore(project_request.thumbnail_url)
+      thumbnail_url = image_utils.make_image_url(image_info)
+      project_request.project.thumbnail_url = thumbnail_url
+      project_request.thumbnail_url = thumbnail_url
+    project_request.submission_timestamp = calendar.timegm(time.gmtime())
+    models.sanitize_project(project_request.project)
+    project_request_model.msg = project_request
+    project_request_model.put()
+    return project_request
+
+
   @remote.method(message_types.VoidMessage, models.ProjectRequestList)
   def get_project_request_list(self, request):
     query = models.ProjectRequestModel.query()
@@ -66,6 +84,7 @@ class ProjectService(remote.Service):
   @remote.method(models.ProjectRequest, models.ProjectRequest)
   def approve_project_request(self, project_request):
     # TODO(chirayu): Ensure that this id exists.  Add more checks.
+    # TODO(chirayu): Add history entry.
     project_request_model = get_project_request_by_id(project_request.id)
     approved_model = models.ApprovedProjectRequestModel(
         msg=project_request, parent=project_request_model.key)
@@ -78,6 +97,7 @@ class ProjectService(remote.Service):
 
   @remote.method(models.ProjectRequest, models.ProjectRequest)
   def reject_project_request(self, project_request):
+    # TODO(chirayu): Add history entry.
     project_request_model = get_project_request_by_id(project_request.id)
     rejected_model = models.RejectedProjectRequestModel(
         msg=project_request, parent=project_request_model.key)

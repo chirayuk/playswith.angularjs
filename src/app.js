@@ -215,7 +215,8 @@ directives.editProjectRequest = function () {
   return {
     restrict: "A",
     scope: {
-      request: "="
+      request: "=",
+      onUpdate: "&"
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
@@ -232,6 +233,7 @@ directives.editProjectRequest = function () {
                 $scope.request = request;
                 console.log("saveChanges: request with id = %O", request);
                 $scope.status_text = "Success!";
+                $scope.onUpdate();
               }).
             error(function(data, status) {
                 $scope.status = status;         
@@ -285,7 +287,7 @@ directives.editProjectRequest = function () {
               </div>
           </div>
           <div class="form-actions">
-            <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
+            <button ng-click="saveChanges()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
           </div>
         </form>
         <div class="span4 offset1">
@@ -359,12 +361,13 @@ directives.projectRequestWithEdit = function () {
     scope: {
       request: "="
     },
-    link: function($scope) {
-      $scope.editMode = "0";
-      $scope.status_text = "Not yet submitted.";
-
+    controller: function($scope, $http) {
       $scope.edit = function(request) {
-        $scope.editMode = "1";
+        $scope.mode = "edit";
+      }
+
+      $scope.doneEditing = function(request) {
+        $scope.mode = "display";
       }
 
       $scope.approve = function(request) {
@@ -377,6 +380,7 @@ directives.projectRequestWithEdit = function () {
                 console.log("Approved request: %O", request);
                 load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
+                $scope.mode = "approved";
               }).
             error(function(data, status) {
                 $scope.status = status;         
@@ -394,22 +398,32 @@ directives.projectRequestWithEdit = function () {
                 console.log("Rejected request: %O", request);
                 load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
+                $scope.mode = "rejected";
               }).
             error(function(data, status) {
                 $scope.status = status;         
                 $scope.status_text = "Failed.";
               });
       }
-
-
-
     },
+
+    link: function($scope, $http) {
+      $scope.mode = "display";
+      $scope.status_text = "Not yet submitted.";
+    },
+
     template: {% filter to_json %}
-      <div ng-switch on="editMode">
-        <div ng-switch-when="1">
-          <div edit-project-request request="request"></div>
+      <div ng-switch on="mode">
+        <div ng-switch-when="approved">
+          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class="label label-success">Approved!</span>
         </div>
-        <div ng-switch-default>
+        <div ng-switch-when="rejected">
+          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class="label label-warning">Rejected!</span>
+        </div>
+        <div ng-switch-when="edit">
+          <div edit-project-request request="request" on-update="doneEditing()"></div>
+        </div>
+        <div ng-switch-when="display">
           <div ng-controller="projectRequestsController" project-request request="request"></div><br>
           <div class="center">
             <a ng-click="approve(request)" class="btn btn-primary"><i class="icon-ok icon-large"></i>

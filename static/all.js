@@ -304,7 +304,8 @@ directives.editProjectRequest = function () {
   return {
     restrict: "A",
     scope: {
-      request: "="
+      request: "=",
+      onUpdate: "&"
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
@@ -321,6 +322,7 @@ directives.editProjectRequest = function () {
                 $scope.request = request;
                 console.log("saveChanges: request with id = %O", request);
                 $scope.status_text = "Success!";
+                $scope.onUpdate();
               }).
             error(function(data, status) {
                 $scope.status = status;         
@@ -330,7 +332,7 @@ directives.editProjectRequest = function () {
       }
     },
 
-    template: "<div>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">You may use &lt;a href=&#34;url&#34;&gt; tags.  All other tags and attributes will be stripped out.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"addToPending()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Submit Request</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}",
+    template: "<div>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">You may use &lt;a href=&#34;url&#34;&gt; tags.  All other tags and attributes will be stripped out.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"saveChanges()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Submit Request</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}",
     link: function($scope) {
       console.log("editProjectRequest: link: request = %O", $scope.request);
     }
@@ -360,12 +362,13 @@ directives.projectRequestWithEdit = function () {
     scope: {
       request: "="
     },
-    link: function($scope) {
-      $scope.editMode = "0";
-      $scope.status_text = "Not yet submitted.";
-
+    controller: function($scope, $http) {
       $scope.edit = function(request) {
-        $scope.editMode = "1";
+        $scope.mode = "edit";
+      }
+
+      $scope.doneEditing = function(request) {
+        $scope.mode = "display";
       }
 
       $scope.approve = function(request) {
@@ -378,6 +381,7 @@ directives.projectRequestWithEdit = function () {
                 console.log("Approved request: %O", request);
                 load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
+                $scope.mode = "approved";
               }).
             error(function(data, status) {
                 $scope.status = status;         
@@ -395,17 +399,21 @@ directives.projectRequestWithEdit = function () {
                 console.log("Rejected request: %O", request);
                 load_project_requests($scope, $http);
                 $scope.status_text = "Success!";
+                $scope.mode = "rejected";
               }).
             error(function(data, status) {
                 $scope.status = status;         
                 $scope.status_text = "Failed.";
               });
       }
-
-
-
     },
-    template: "\n      <div ng-switch on=\"editMode\">\n        <div ng-switch-when=\"1\">\n          <div edit-project-request request=\"request\"></div>\n        </div>\n        <div ng-switch-default>\n          <div ng-controller=\"projectRequestsController\" project-request request=\"request\"></div><br>\n          <div class=\"center\">\n            <a ng-click=\"approve(request)\" class=\"btn btn-primary\"><i class=\"icon-ok icon-large\"></i>\n              Approve\n            </a>\n            <a ng-click=\"reject(request)\" class=\"btn btn-danger\"><i class=\"icon-trash icon-large\"></i>\n              Reject\n            </a>\n            <a ng-click=\"edit(request)\" class=\"btn btn-info\"><i class=\"icon-pencil icon-large\"></i>\n              Edit\n            </a>\n          </div>\n          <br>\n          <b>Status:</b> {{ status_text }}\n        </div>\n      </div>"
+
+    link: function($scope, $http) {
+      $scope.mode = "display";
+      $scope.status_text = "Not yet submitted.";
+    },
+
+    template: "\n      <div ng-switch on=\"mode\">\n        <div ng-switch-when=\"approved\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-success\">Approved!</span>\n        </div>\n        <div ng-switch-when=\"rejected\">\n          <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class=\"label label-warning\">Rejected!</span>\n        </div>\n        <div ng-switch-when=\"edit\">\n          <div edit-project-request request=\"request\" on-update=\"doneEditing()\"></div>\n        </div>\n        <div ng-switch-when=\"display\">\n          <div ng-controller=\"projectRequestsController\" project-request request=\"request\"></div><br>\n          <div class=\"center\">\n            <a ng-click=\"approve(request)\" class=\"btn btn-primary\"><i class=\"icon-ok icon-large\"></i>\n              Approve\n            </a>\n            <a ng-click=\"reject(request)\" class=\"btn btn-danger\"><i class=\"icon-trash icon-large\"></i>\n              Reject\n            </a>\n            <a ng-click=\"edit(request)\" class=\"btn btn-info\"><i class=\"icon-pencil icon-large\"></i>\n              Edit\n            </a>\n          </div>\n          <br>\n          <b>Status:</b> {{ status_text }}\n        </div>\n      </div>"
   };
 };
 
