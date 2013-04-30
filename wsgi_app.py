@@ -36,7 +36,7 @@ def serve_blob(encoded_image_info):
     # Caching headers.
     "ETag": "static",
     "Last-Modified": "Fri, 01 Jan 1990 00:00:00 GMT",
-    "Cache control": CACHE_CONTROL_MAXCACHE,
+    "Cache-Control": CACHE_CONTROL_MAXCACHE,
     }
   return (u"", 200, headers)
 
