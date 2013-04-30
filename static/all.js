@@ -264,35 +264,13 @@ directives.newProjectRequest = function () {
   console.log("directives.newProjectRequest");
   return {
     restrict: "A",
-
+    scope: {},
     controller: function ($scope, $http) {
       $scope.request = {project: {} };
-      $scope.submit_disabled = false;
-      $scope.status_text = "Not yet submitted.";
-
-      $scope.addToPending = function() {
-        var url = "/rpc/project.create_project_request";
-        $scope.status_text = "Submitting ...";
-        console.log("%O", $scope.request);
-        $scope.submit_disabled = true;
-        $http({method: "POST", url: url, data: $scope.request }).
-            success(function(request, status) {
-                $scope.status = status;
-                $scope.request = request;
-                console.log("addToPending: request with id = %O", request);
-                $scope.status_text = "Success!";
-              }).
-            error(function(data, status) {
-                $scope.status = status;         
-                $scope.status_text = "Failed.";
-                $scope.submit_disabled = false;
-              });
-      }
     },
 
-    template: "<div class=\"row\">\n      <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputName\">Name</label>\n            <div class=\"controls\">\n              <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n            </div>\n        </div>\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputDescription\">Description</label>\n            <div class=\"controls\">\n              <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n              <p class=\"muted\">\n                You may use &lt;a href=&#34;url&#34;&gt; tags. \n                <em>All other tags and attributes will be stripped out.</em>\n                The preview display lies.  The server will strip it out!\n              </p>\n            </div>\n        </div>\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputURL\">URL</label>\n            <div class=\"controls\">\n              <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n            </div>\n        </div>\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n            <div class=\"controls\">\n              <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n              <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n            </div>\n        </div>\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n            <div class=\"controls\">\n              <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n            </div>\n        </div>\n        <div class=\"control-group\">\n          <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n            <div class=\"controls\">\n              <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n              <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n            </div>\n        </div>\n        <div class=\"form-actions\">\n          <button ng-click=\"addToPending()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Submit Request</button>\n        </div>\n      </form>\n      <div class=\"span4 offset1\">\n        \n        <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n        <div class=\"well\" preview-project-request></div>\n      </div>\n      </div>\n      <br>\n      <b>Status:</b> {{ status_text }}",
+    template: "<div edit-project-request request=\"request\"></div>",
 
-    scope: {},
     link: function($scope) {
       console.log("newProjectRequest: link: request = %O", $scope.request);
     }
@@ -315,8 +293,24 @@ directives.editProjectRequest = function () {
       $scope.submit_disabled = false;
       $scope.status_text = "Not yet submitted.";
 
+      $scope.getSubmitButtonText = function() {
+        if ($scope.request.id) {
+          return "Save";
+        } else {
+          return "Submit Request CKCK";
+        }
+      };
+
+      $scope.getUrl = function() {
+        if ($scope.request.id) {
+          return "/rpc/project.update_project_request";
+        } else {
+          return "/rpc/project.create_project_request";
+        }
+      };
+
       $scope.saveChanges = function() {
-        var url = "/rpc/project.update_project_request";
+        var url = $scope.getUrl();
         $scope.status_text = "Saving ...";
         console.log("%O", $scope.request);
         $scope.submit_disabled = true;
@@ -336,7 +330,7 @@ directives.editProjectRequest = function () {
       }
     },
 
-    template: "<div>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">\n                  You may use &lt;a href=&#34;url&#34;&gt; tags. \n                  <em>All other tags and attributes will be stripped out.</em>\n                  The preview display lies.  The server will strip it out!\n                </p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"saveChanges()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Save</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}"
+    template: "<div>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">\n                  You may use &lt;a href=&#34;url&#34;&gt; tags. \n                  <em>All other tags and attributes will be stripped out.</em>\n                  The preview display lies.  The server will strip it out!\n                </p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"saveChanges()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">{{getSubmitButtonText()}}</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}"
   };
 };
 
