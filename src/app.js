@@ -96,6 +96,27 @@ directives.projectInfoSmall = function () {
   };
 };
 
+
+directives.previewProjectRequest = function () {
+  console.log("directives.previewProjectRequest");
+  return {
+    restrict: "A",
+    template: {% filter to_json -%}
+      <div style="well">
+        <h3>{{request.project.name}}</h3>
+        <div ng-bind-html-unsafe="request.project.description"></div>
+        <p ng-show="request.project.url">Website: <a rel="nofollow" href="{{request.project.url}}">{{request.project.url}}</a></p>
+        <span ng-show="request.project.tags">Tags: <span class="label label-info bwa-tag" ng-repeat="tag in request.project.tags">
+            {{tag}}
+          </span>
+        </span>
+        <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
+      </div>
+      {%- endfilter %},
+  };
+}
+
+
 directives.newProjectRequest = function () {
   console.log("directives.newProjectRequest");
   return {
@@ -137,7 +158,7 @@ directives.newProjectRequest = function () {
       <div>
         <h1>Submit a new project</h1>
         <div class="row">
-        <form class="well form-horizontal span6" novalidate method="post" accept-charset="utf-8">
+        <form class="well form-horizontal span6 pull-left float:left" novalidate method="post" accept-charset="utf-8">
           <div class="control-group">
             <label class="control-label" for="inputName">Name</label>
               <div class="controls">
@@ -147,7 +168,7 @@ directives.newProjectRequest = function () {
           <div class="control-group">
             <label class="control-label" for="inputDescription">Description</label>
               <div class="controls">
-                <textarea ng-model="request.project.description" rows=5 id="inputDescription"></textarea>
+                <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
               </div>
           </div>
           <div class="control-group">
@@ -178,6 +199,10 @@ directives.newProjectRequest = function () {
             <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
           </div>
         </form>
+        <div class="span4 offset1">
+          <h2>Preview</h2>
+          <div style="span4" preview-project-request></div>
+        </div>
         </div>
         <br>
         <b>Status:</b> {{ status_text }}
