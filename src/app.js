@@ -81,9 +81,9 @@ directives.projectInfoSmall = function () {
         <h3>{{project.name}}</h3>
         <div ng-bind-html-unsafe="project.description"></div>
         <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
-        Tags: <span ng-repeat="tag in project.tags">
-            {{tag}}
-          </span>
+        <span ng-show="project.tags">
+          Tags: <span project-tags="project.tags"></span>
+        </span>
         <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
       </div>
       {%- endfilter %},
@@ -97,6 +97,22 @@ directives.projectInfoSmall = function () {
 };
 
 
+directives.projectTags = function() {
+  return {
+    restrict: "A",
+    scope: {
+      tags: "=projectTags",
+    },
+    template: {% filter to_json -%}
+      <span class="label label-info bwa-tag"
+            ng-repeat="tag in tags">
+        {{tag}}
+      </span>
+      {%- endfilter %},
+  };
+}
+
+
 directives.previewProjectRequest = function () {
   console.log("directives.previewProjectRequest");
   return {
@@ -106,9 +122,8 @@ directives.previewProjectRequest = function () {
         <h3>{{request.project.name}}</h3>
         <div ng-bind-html-unsafe="request.project.description"></div>
         <p ng-show="request.project.url">Website: <a rel="nofollow" href="{{request.project.url}}">{{request.project.url}}</a></p>
-        <span ng-show="request.project.tags">Tags: <span class="label label-info bwa-tag" ng-repeat="tag in request.project.tags">
-            {{tag}}
-          </span>
+        <span ng-show="request.project.tags">
+          Tags: <span project-tags="request.project.tags"></span>
         </span>
         <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
       </div>
@@ -131,13 +146,6 @@ directives.newProjectRequest = function () {
         var url = "/rpc/project.create_project_request";
         $scope.status_text = "Submitting ...";
         console.log("%O", $scope.request);
-        // TODO(chirayu): Better way of getting tags.  UI should have some kind of
-        // autocomplete as well.
-        var tags = $scope.request.project.tags;
-        if (tags && tags.trim) {
-          $scope.request.project.tags = tags.split(",").map(
-              function(tag) { return tag.trim() });
-        }
         $scope.submit_disabled = true;
         $http({method: "POST", url: url, data: $scope.request }).
             success(function(request, status) {
@@ -188,7 +196,7 @@ directives.newProjectRequest = function () {
           <div class="control-group">
             <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
               <div class="controls">
-                <input ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
+                <input ng-list ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
               </div>
           </div>
           <div class="control-group">

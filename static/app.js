@@ -74,7 +74,7 @@ directives.projectInfoSmall = function () {
   console.log("directives.projectInfoSmall");
   return {
     restrict: "A",
-    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n        Tags: <span ng-repeat=\"tag in project.tags\">\n            {{tag}}\n          </span>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n      </div>",
+    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n        <span ng-show=\"project.tags\">\n          Tags: <span project-tags=\"project.tags\"></span>\n        </span>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n      </div>",
     scope: {
       project: "="
     },
@@ -85,11 +85,22 @@ directives.projectInfoSmall = function () {
 };
 
 
+directives.projectTags = function() {
+  return {
+    restrict: "A",
+    scope: {
+      tags: "=projectTags",
+    },
+    template: "<span class=\"label label-info bwa-tag\"\n            ng-repeat=\"tag in tags\">\n        {{tag}}\n      </span>",
+  };
+}
+
+
 directives.previewProjectRequest = function () {
   console.log("directives.previewProjectRequest");
   return {
     restrict: "A",
-    template: "<div style=\"well\">\n        <h3>{{request.project.name}}</h3>\n        <div ng-bind-html-unsafe=\"request.project.description\"></div>\n        <p ng-show=\"request.project.url\">Website: <a rel=\"nofollow\" href=\"{{request.project.url}}\">{{request.project.url}}</a></p>\n        <span ng-show=\"request.project.tags\">Tags: <span class=\"label label-info bwa-tag\" ng-repeat=\"tag in request.project.tags\">\n            {{tag}}\n          </span>\n        </span>\n        <div ng-show=\"request.thumbnail_url\"><img ng-src=\"{{request.thumbnail_url}}\">\n      </div>",
+    template: "<div style=\"well\">\n        <h3>{{request.project.name}}</h3>\n        <div ng-bind-html-unsafe=\"request.project.description\"></div>\n        <p ng-show=\"request.project.url\">Website: <a rel=\"nofollow\" href=\"{{request.project.url}}\">{{request.project.url}}</a></p>\n        <span ng-show=\"request.project.tags\">\n          Tags: <span project-tags=\"request.project.tags\"></span>\n        </span>\n        <div ng-show=\"request.thumbnail_url\"><img ng-src=\"{{request.thumbnail_url}}\">\n      </div>",
   };
 }
 
@@ -108,13 +119,6 @@ directives.newProjectRequest = function () {
         var url = "/rpc/project.create_project_request";
         $scope.status_text = "Submitting ...";
         console.log("%O", $scope.request);
-        // TODO(chirayu): Better way of getting tags.  UI should have some kind of
-        // autocomplete as well.
-        var tags = $scope.request.project.tags;
-        if (tags && tags.trim) {
-          $scope.request.project.tags = tags.split(",").map(
-              function(tag) { return tag.trim() });
-        }
         $scope.submit_disabled = true;
         $http({method: "POST", url: url, data: $scope.request }).
             success(function(request, status) {
@@ -131,7 +135,7 @@ directives.newProjectRequest = function () {
       }
     },
 
-    template: "<div>\n        <h1>Submit a new project</h1>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">You may use &lt;a href=&#34;url&#34;&gt; tags.  All other tags and attributes will be stripped out.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"addToPending()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Submit Request</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}",
+    template: "<div>\n        <h1>Submit a new project</h1>\n        <div class=\"row\">\n        <form class=\"well form-horizontal span6 pull-left float:left\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputName\">Name</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.name\" type=\"text\" id=\"inputName\" placeholder=\"Project Name\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputDescription\">Description</label>\n              <div class=\"controls\">\n                <textarea ng-model=\"request.project.description\" rows=8 id=\"inputDescription\"></textarea>\n                <p class=\"muted\">You may use &lt;a href=&#34;url&#34;&gt; tags.  All other tags and attributes will be stripped out.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputURL\">URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.project.url\" type=\"text\" id=\"inputURL\" placeholder=\"Main URL\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputThumbnailUrl\">Thumbnail URL</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.thumbnail_url\" type=\"text\" id=\"inputThumbnailUrl\" placeholder=\"http://\">\n                <p class=\"muted\">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputTagsCsv\">Tags (csv)</label>\n              <div class=\"controls\">\n                <input ng-list ng-model=\"request.project.tags\" type=\"text\" id=\"inputTagsCsv\" placeholder=\"Production, Animations, Open Source\">\n              </div>\n          </div>\n          <div class=\"control-group\">\n            <label class=\"control-label\" for=\"inputSubmitterEmail\">Submitter E-mail</label>\n              <div class=\"controls\">\n                <input ng-model=\"request.submitter_email\" type=\"text\" id=\"inputSubmitterEmail\" placeholder=\"name@example.com\">\n                <p class=\"muted\">We'll use this e-mail address to contact you with any questions we have about this submission.</p>\n              </div>\n          </div>\n          <div class=\"form-actions\">\n            <button ng-click=\"addToPending()\" type=\"submit\" ng-disabled=\"submit_disabled\" class=\"btn btn-primary\">Submit Request</button>\n          </div>\n        </form>\n        <div class=\"span4 offset1\">\n          \n          <div style=\"margin-top:-5em;\"><h2>Preview</h2></div>\n          <div class=\"well\" preview-project-request></div>\n        </div>\n        </div>\n        <br>\n        <b>Status:</b> {{ status_text }}",
     scope: {},
     link: function($scope) {
       console.log("newProjectRequest: link: request = %O", $scope.request);
