@@ -146,66 +146,65 @@ directives.newProjectRequest = function () {
     },
 
     template: {% filter to_json -%}
-      <div>
-        <h1>Submit a new project</h1>
-        <div class="row">
-        <form class="well form-horizontal span6 pull-left float:left" novalidate method="post" accept-charset="utf-8">
-          <div class="control-group">
-            <label class="control-label" for="inputName">Name</label>
-              <div class="controls">
-                <input ng-model="request.project.name" type="text" id="inputName" placeholder="Project Name">
-              </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="inputDescription">Description</label>
-              <div class="controls">
-                <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
-                <p class="muted">
-                  [[ 'You may use <a href="url"> tags. ' | e ]]
-                  <em>All other tags and attributes will be stripped out.</em>
-                  The preview display lies.  The server will strip it out!
-                </p>
-              </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="inputURL">URL</label>
-              <div class="controls">
-                <input ng-model="request.project.url" type="text" id="inputURL" placeholder="Main URL">
-              </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
-              <div class="controls">
-                <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
-                <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
-              </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
-              <div class="controls">
-                <input ng-list ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
-              </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="inputSubmitterEmail">Submitter E-mail</label>
-              <div class="controls">
-                <input ng-model="request.submitter_email" type="text" id="inputSubmitterEmail" placeholder="name@example.com">
-                <p class="muted">We'll use this e-mail address to contact you with any questions we have about this submission.</p>
-              </div>
-          </div>
-          <div class="form-actions">
-            <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
-          </div>
-        </form>
-        <div class="span4 offset1">
-          {# TODO(chirayu): Fix this to now use style.  Need a margin fixed heading tag. #}
-          <div style="margin-top:-5em;"><h2>Preview</h2></div>
-          <div class="well" preview-project-request></div>
+      <div class="row">
+      <form class="well form-horizontal span6 pull-left float:left" novalidate method="post" accept-charset="utf-8">
+        <div class="control-group">
+          <label class="control-label" for="inputName">Name</label>
+            <div class="controls">
+              <input ng-model="request.project.name" type="text" id="inputName" placeholder="Project Name">
+            </div>
         </div>
+        <div class="control-group">
+          <label class="control-label" for="inputDescription">Description</label>
+            <div class="controls">
+              <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
+              <p class="muted">
+                [[ 'You may use <a href="url"> tags. ' | e ]]
+                <em>All other tags and attributes will be stripped out.</em>
+                The preview display lies.  The server will strip it out!
+              </p>
+            </div>
         </div>
-        <br>
-        <b>Status:</b> {{ status_text }}
+        <div class="control-group">
+          <label class="control-label" for="inputURL">URL</label>
+            <div class="controls">
+              <input ng-model="request.project.url" type="text" id="inputURL" placeholder="Main URL">
+            </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
+            <div class="controls">
+              <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
+              <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
+            </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
+            <div class="controls">
+              <input ng-list ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
+            </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="inputSubmitterEmail">Submitter E-mail</label>
+            <div class="controls">
+              <input ng-model="request.submitter_email" type="text" id="inputSubmitterEmail" placeholder="name@example.com">
+              <p class="muted">We'll use this e-mail address to contact you with any questions we have about this submission.</p>
+            </div>
+        </div>
+        <div class="form-actions">
+          <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
+        </div>
+      </form>
+      <div class="span4 offset1">
+        {# TODO(chirayu): Fix this to now use style.  Need a margin fixed heading tag. #}
+        <div style="margin-top:-5em;"><h2>Preview</h2></div>
+        <div class="well" preview-project-request></div>
+      </div>
+      </div>
+      <br>
+      <b>Status:</b> {{ status_text }}
       {%- endfilter %},
+
     scope: {},
     link: function($scope) {
       console.log("newProjectRequest: link: request = %O", $scope.request);
@@ -295,7 +294,7 @@ directives.editProjectRequest = function () {
               </div>
           </div>
           <div class="form-actions">
-            <button ng-click="saveChanges()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
+            <button ng-click="saveChanges()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Save</button>
           </div>
         </form>
         <div class="span4 offset1">
