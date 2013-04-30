@@ -169,6 +169,7 @@ directives.newProjectRequest = function () {
             <label class="control-label" for="inputDescription">Description</label>
               <div class="controls">
                 <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
+                <p class="muted">[[ 'You may use <a href="url"> tags.  All other tags and attributes will be stripped out.' | e ]]</p>
               </div>
           </div>
           <div class="control-group">
@@ -181,6 +182,7 @@ directives.newProjectRequest = function () {
             <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
               <div class="controls">
                 <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
+                <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
               </div>
           </div>
           <div class="control-group">
@@ -193,6 +195,7 @@ directives.newProjectRequest = function () {
             <label class="control-label" for="inputSubmitterEmail">Submitter E-mail</label>
               <div class="controls">
                 <input ng-model="request.submitter_email" type="text" id="inputSubmitterEmail" placeholder="name@example.com">
+                <p class="muted">We'll use this e-mail address to contact you with any questions we have about this submission.</p>
               </div>
           </div>
           <div class="form-actions">
@@ -200,8 +203,9 @@ directives.newProjectRequest = function () {
           </div>
         </form>
         <div class="span4 offset1">
-          <h2>Preview</h2>
-          <div style="span4" preview-project-request></div>
+          {# TODO(chirayu): Fix this to now use style.  Need a margin fixed heading tag. #}
+          <div style="margin-top:-5em;"><h2>Preview</h2></div>
+          <div class="well" preview-project-request></div>
         </div>
         </div>
         <br>
