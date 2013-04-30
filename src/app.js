@@ -248,11 +248,7 @@ directives.projectRequest = function () {
         <div class="row">
           <div class="span2 pwa-item-label">Tags</div>
           <div class="span10">
-            <ul>
-              <li ng-repeat="tag in request.project.tags">
-                {{tag}}
-              </li>
-            </ul>
+            <span project-tags="request.project.tags"></span>
           </div>
         </div>
         <div class="row">
