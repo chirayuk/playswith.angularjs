@@ -160,7 +160,11 @@ directives.newProjectRequest = function () {
             <label class="control-label" for="inputDescription">Description</label>
               <div class="controls">
                 <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
-                <p class="muted">[[ 'You may use <a href="url"> tags.  All other tags and attributes will be stripped out.' | e ]]</p>
+                <p class="muted">
+                  [[ 'You may use <a href="url"> tags. ' | e ]]
+                  <em>All other tags and attributes will be stripped out.</em>
+                  The preview display lies.  The server will strip it out!
+                </p>
               </div>
           </div>
           <div class="control-group">
@@ -257,7 +261,11 @@ directives.editProjectRequest = function () {
             <label class="control-label" for="inputDescription">Description</label>
               <div class="controls">
                 <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
-                <p class="muted">[[ 'You may use <a href="url"> tags.  All other tags and attributes will be stripped out.' | e ]]</p>
+                <p class="muted">
+                  [[ 'You may use <a href="url"> tags. ' | e ]]
+                  <em>All other tags and attributes will be stripped out.</em>
+                  The preview display lies.  The server will strip it out!
+                </p>
               </div>
           </div>
           <div class="control-group">
