@@ -221,6 +221,9 @@ directives.editProjectRequest = function () {
       request: "=",
       onUpdate: "&"
     },
+    link: function($scope) {
+      console.log("editProjectRequest: link: request = %O", $scope.request);
+    },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
       $scope.status_text = "Not yet submitted.";
@@ -305,10 +308,7 @@ directives.editProjectRequest = function () {
         </div>
         <br>
         <b>Status:</b> {{ status_text }}
-      {%- endfilter %},
-    link: function($scope) {
-      console.log("editProjectRequest: link: request = %O", $scope.request);
-    }
+      {%- endfilter %}
   };
 };
 

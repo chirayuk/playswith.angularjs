@@ -58,7 +58,7 @@ class ProjectService(remote.Service):
   def update_project_request(self, project_request):
     # TODO(chirayu): Add history entry.
     project_request_model = get_project_request_by_id(project_request.id)
-    orig_thumbnail_url = project_request_model.msg.project.thumbnail_url
+    orig_thumbnail_url = project_request_model.msg.thumbnail_url
     new_thumbnail_url = project_request.thumbnail_url
     if not new_thumbnail_url:
       project_request_model.msg.project.thumbnail_url = None
