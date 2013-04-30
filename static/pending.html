@@ -271,24 +271,9 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   <div ng-controller="projectRequestsController">
     <h1>Pending Projects</h1>
     <div ng-repeat="request in requests">
-      <div>
-        <div project-request request="request"></div><br>
-        <div class="center">
-          <a ng-click="approve(request)" class="btn btn-primary"><i class="icon-ok icon-large"></i>
-            Approve
-          </a>
-          <a ng-click="reject(request)" class="btn btn-danger"><i class="icon-trash icon-large"></i>
-            Reject
-          </a>
-          <a ng-click="edit(request)" class="btn btn-info"><i class="icon-pencil icon-large"></i>
-            Edit
-          </a>
-        </div>
-      </div>
+      <div project-request-with-edit request="request"></div>
       <hr>
     </div>
-    <br>
-    <b>Status:</b> {{ status_text }}
   </div>
 
   </div>

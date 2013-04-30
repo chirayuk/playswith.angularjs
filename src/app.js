@@ -49,42 +49,7 @@ playsWith.controller("homepageController", function ($scope, $http) {
 
 playsWith.controller("projectRequestsController", function ($scope, $http) {
   $scope.requests = [];
-  $scope.status_text = "Not yet submitted.";
   load_project_requests($scope, $http);
-
-  $scope.approve = function(request) {
-    var url = "/rpc/project.approve_project_request";
-    $scope.status_text = "Approving ...";
-    console.log("%O", request);
-    $http({method: "POST", url: url, data: request }).
-        success(function(request, status) {
-            $scope.status = status;
-            console.log("Approved request: %O", request);
-            load_project_requests($scope, $http);
-            $scope.status_text = "Success!";
-          }).
-        error(function(data, status) {
-            $scope.status = status;         
-            $scope.status_text = "Failed.";
-          });
-  }
-
-  $scope.reject = function(request) {
-    var url = "/rpc/project.reject_project_request";
-    $scope.status_text = "Rejecting ...";
-    console.log("%O", request);
-    $http({method: "POST", url: url, data: request }).
-        success(function(request, status) {
-            $scope.status = status;
-            console.log("Rejected request: %O", request);
-            load_project_requests($scope, $http);
-            $scope.status_text = "Success!";
-          }).
-        error(function(data, status) {
-            $scope.status = status;         
-            $scope.status_text = "Failed.";
-          });
-  }
 
 });
 
@@ -245,10 +210,107 @@ directives.newProjectRequest = function () {
 };
 
 
+directives.editProjectRequest = function () {
+  console.log("directives.editProjectRequest");
+  return {
+    restrict: "A",
+    scope: {
+      request: "="
+    },
+    controller: function ($scope, $http) {
+      $scope.submit_disabled = false;
+      $scope.status_text = "Not yet submitted.";
+
+      $scope.saveChanges = function() {
+        var url = "/rpc/project.update_project_request";
+        $scope.status_text = "Saving ...";
+        console.log("%O", $scope.request);
+        $scope.submit_disabled = true;
+        $http({method: "POST", url: url, data: $scope.request }).
+            success(function(request, status) {
+                $scope.status = status;
+                $scope.request = request;
+                console.log("saveChanges: request with id = %O", request);
+                $scope.status_text = "Success!";
+              }).
+            error(function(data, status) {
+                $scope.status = status;         
+                $scope.status_text = "Failed.";
+                $scope.submit_disabled = false;
+              });
+      }
+    },
+
+    template: {% filter to_json -%}
+      <div>
+        <div class="row">
+        <form class="well form-horizontal span6 pull-left float:left" novalidate method="post" accept-charset="utf-8">
+          <div class="control-group">
+            <label class="control-label" for="inputName">Name</label>
+              <div class="controls">
+                <input ng-model="request.project.name" type="text" id="inputName" placeholder="Project Name">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputDescription">Description</label>
+              <div class="controls">
+                <textarea ng-model="request.project.description" rows=8 id="inputDescription"></textarea>
+                <p class="muted">[[ 'You may use <a href="url"> tags.  All other tags and attributes will be stripped out.' | e ]]</p>
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputURL">URL</label>
+              <div class="controls">
+                <input ng-model="request.project.url" type="text" id="inputURL" placeholder="Main URL">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
+              <div class="controls">
+                <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
+                <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
+              <div class="controls">
+                <input ng-list ng-model="request.project.tags" type="text" id="inputTagsCsv" placeholder="Production, Animations, Open Source">
+              </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="inputSubmitterEmail">Submitter E-mail</label>
+              <div class="controls">
+                <input ng-model="request.submitter_email" type="text" id="inputSubmitterEmail" placeholder="name@example.com">
+                <p class="muted">We'll use this e-mail address to contact you with any questions we have about this submission.</p>
+              </div>
+          </div>
+          <div class="form-actions">
+            <button ng-click="addToPending()" type="submit" ng-disabled="submit_disabled" class="btn btn-primary">Submit Request</button>
+          </div>
+        </form>
+        <div class="span4 offset1">
+          {# TODO(chirayu): Fix this to now use style.  Need a margin fixed heading tag. #}
+          <div style="margin-top:-5em;"><h2>Preview</h2></div>
+          <div class="well" preview-project-request></div>
+        </div>
+        </div>
+        <br>
+        <b>Status:</b> {{ status_text }}
+      {%- endfilter %},
+    link: function($scope) {
+      console.log("editProjectRequest: link: request = %O", $scope.request);
+    }
+  };
+};
+
+
 directives.projectRequest = function () {
   console.log("directives.projectRequest");
   return {
     restrict: "A",
+    scope: {
+      request: "="
+    },
     template: {% filter to_json %}
       <div>
         <div class="row">
@@ -283,13 +345,94 @@ directives.projectRequest = function () {
         </div>
         
       {%- endfilter %},
-    scope: {
-      request: "="
-    },
     link: function($scope) {
       console.log("projectInfoSmall: link: request = %O", $scope.request);
     }
   };
 };
+
+
+directives.projectRequestWithEdit = function () {
+  console.log("directives.projectRequestWithEdit");
+  return {
+    restrict: "A",
+    scope: {
+      request: "="
+    },
+    link: function($scope) {
+      $scope.editMode = "0";
+      $scope.status_text = "Not yet submitted.";
+
+      $scope.edit = function(request) {
+        $scope.editMode = "1";
+      }
+
+      $scope.approve = function(request) {
+        var url = "/rpc/project.approve_project_request";
+        $scope.status_text = "Approving ...";
+        console.log("%O", request);
+        $http({method: "POST", url: url, data: request }).
+            success(function(request, status) {
+                $scope.status = status;
+                console.log("Approved request: %O", request);
+                load_project_requests($scope, $http);
+                $scope.status_text = "Success!";
+              }).
+            error(function(data, status) {
+                $scope.status = status;         
+                $scope.status_text = "Failed.";
+              });
+      }
+
+      $scope.reject = function(request) {
+        var url = "/rpc/project.reject_project_request";
+        $scope.status_text = "Rejecting ...";
+        console.log("%O", request);
+        $http({method: "POST", url: url, data: request }).
+            success(function(request, status) {
+                $scope.status = status;
+                console.log("Rejected request: %O", request);
+                load_project_requests($scope, $http);
+                $scope.status_text = "Success!";
+              }).
+            error(function(data, status) {
+                $scope.status = status;         
+                $scope.status_text = "Failed.";
+              });
+      }
+
+
+
+    },
+    template: {% filter to_json %}
+      <div ng-switch on="editMode">
+        <div ng-switch-when="1">
+          <div edit-project-request request="request"></div>
+        </div>
+        <div ng-switch-default>
+          <div ng-controller="projectRequestsController" project-request request="request"></div><br>
+          <div class="center">
+            <a ng-click="approve(request)" class="btn btn-primary"><i class="icon-ok icon-large"></i>
+              Approve
+            </a>
+            <a ng-click="reject(request)" class="btn btn-danger"><i class="icon-trash icon-large"></i>
+              Reject
+            </a>
+            <a ng-click="edit(request)" class="btn btn-info"><i class="icon-pencil icon-large"></i>
+              Edit
+            </a>
+          </div>
+          <br>
+          <b>Status:</b> {{ status_text }}
+        </div>
+      </div>
+        
+      {%- endfilter %}
+  };
+};
+
+
+
+
 
 playsWith.directive(directives);
