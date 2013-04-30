@@ -69,6 +69,30 @@ class ProjectRequestModel(ndb.Model):
       )
 
 
+class ApprovedProjectRequestModel(ndb.Model):
+  msg = ndb.msgprop.MessageProperty(
+      ProjectRequest,
+      indexed_fields=[
+          "project.id",
+          "project.name",
+          "project.tags",
+          "submitter_email",
+          ]
+      )
+
+class RejectedProjectRequestModel(ndb.Model):
+  msg = ndb.msgprop.MessageProperty(
+      ProjectRequest,
+      indexed_fields=[
+          "project.id",
+          "project.name",
+          "project.tags",
+          "submitter_email",
+          ]
+      )
+
+
+
 class ProjectList(messages.Message):
   projects = messages.MessageField(Project, 1, repeated=True)
 

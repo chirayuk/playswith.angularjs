@@ -67,10 +67,21 @@ class ProjectService(remote.Service):
   def approve_project_request(self, project_request):
     # TODO(chirayu): Ensure that this id exists.  Add more checks.
     project_request_model = get_project_request_by_id(project_request.id)
-    # TODO(chirayu): Set the key based on the project_request_model key.
+    approved_model = models.ApprovedProjectRequestModel(
+        msg=project_request, parent=project_request_model.key)
+    approved_model.put()
     project_model = models.ProjectModel(msg=project_request.project, parent=project_request_model.key)
     key = project_model.put()
     project_request.id = key.urlsafe()
-    # TODO(chirayu): Create a link from this project to it's approval chain / history.
+    project_request_model.key.delete()
+    return project_request
+
+  @remote.method(models.ProjectRequest, models.ProjectRequest)
+  def reject_project_request(self, project_request):
+    project_request_model = get_project_request_by_id(project_request.id)
+    rejected_model = models.RejectedProjectRequestModel(
+        msg=project_request, parent=project_request_model.key)
+    key = rejected_model.put()
+    project_request.id = key.urlsafe()
     project_request_model.key.delete()
     return project_request

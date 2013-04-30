@@ -66,6 +66,24 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
             $scope.status_text = "Failed.";
           });
   }
+
+  $scope.reject = function(request) {
+    var url = "/rpc/project.reject_project_request";
+    $scope.status_text = "Rejecting ...";
+    console.log("%O", request);
+    $http({method: "POST", url: url, data: request }).
+        success(function(request, status) {
+            $scope.status = status;
+            console.log("Rejected request: %O", request);
+            load_project_requests($scope, $http);
+            $scope.status_text = "Success!";
+          }).
+        error(function(data, status) {
+            $scope.status = status;         
+            $scope.status_text = "Failed.";
+          });
+  }
+
 });
 
 var directives = playsWith.directives = {};
