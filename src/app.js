@@ -109,15 +109,31 @@ directives.previewProjectRequest = function () {
   return {
     restrict: "A",
     template: {% filter to_json -%}
-      <div style="well">
+      <div class="well">
         <h3>{{request.project.name}}</h3>
         <div ng-bind-html-unsafe="request.project.description"></div>
-        <p ng-show="request.project.url">Website: <a rel="nofollow" href="{{request.project.url}}">{{request.project.url}}</a></p>
+        <div ng-switch on="type">
+          <div ng-switch-when="BUILTWITH">
+            <p ng-show="request.project.url">Website: <a rel="nofollow" href="{{request.project.url}}">{{request.project.url}}</a></p>
+          </div>
+        </div>
         <span ng-show="request.project.tags">
           Tags: <span project-tags="request.project.tags"></span>
         </span>
-        <div ng-show="request.thumbnail_url"><img ng-src="{{request.thumbnail_url}}">
+        <div ng-switch on="type">
+          <div ng-switch-when="BUILTWITH">
+            <div ng-show="request.thumbnail_url">
+              <img ng-src="{{request.thumbnail_url}}">
+            </div>
+          </div>
+        </div>
       </div>
+      <div>
+        <span ng-show="request.submitter_email">
+          <b>Submitter E-Mail</b>:
+          {{request.submitter_email}}
+        </span>
+      <div>
       {%- endfilter %},
   };
 }
@@ -267,7 +283,7 @@ directives.editProjectRequest = function () {
         <div class="span4 offset1">
           {# TODO(chirayu): Fix this to now use style.  Need a margin fixed heading tag. #}
           <div style="margin-top:-5em;"><h2>Preview</h2></div>
-          <div class="well" preview-project-request></div>
+          <div preview-project-request></div>
         </div>
         </div>
         <br>
