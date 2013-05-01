@@ -3,8 +3,8 @@
 {% block title %}Submit a project | Plays with AngularJS{% endblock %}
 
 {% block main_content %}
-  <div>
+  <div ng-controller="playswithRootController">
     <h1>Submit a new project</h1>
-    <div new-project-request></div>
+    <div new-project-request type="type"></div>
   </div>
 {% endblock %}

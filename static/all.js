@@ -212,6 +212,14 @@ playsWith.filter("utcTimestampToDate", function ($filter) {
 });
 
 
+playsWith.controller("playswithRootController", function ($scope) {
+  $scope.type = "PLAYSWITH";
+});
+
+playsWith.controller("builtwithRootController", function ($scope) {
+  $scope.type = "BUILTWITH";
+});
+
 playsWith.controller("homepageController", function ($scope, $http) {
   $scope.projects = load_projects($scope, $http);
 });
@@ -264,9 +272,12 @@ directives.newProjectRequest = function () {
   console.log("directives.newProjectRequest");
   return {
     restrict: "A",
-    scope: {},
+    scope: {
+      type: "=",
+    },
+
     controller: function ($scope, $http) {
-      $scope.request = {project: {type: "PLAYSWITH"} };
+      $scope.request = {project: {type: $scope.type} };
     },
 
     template: "<div edit-project-request request=\"request\"></div>",
