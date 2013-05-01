@@ -50,6 +50,7 @@ def _builtwith_project_json_to_project(project_json):
   # thumbnail urls are relative.  Translate them.
   project_json["thumbnail_url"] = "/static/img/projects/{0}".format(
       project_json["thumbnail_url"])
+  project_json["type"] = models.Project.Type.BUILTWITH
   return project_json
 
 def _get_builtwith_default_projects_json():
@@ -67,6 +68,7 @@ def _get_playswith_default_projects_json():
     category_name = category_dict["category"]
     for project_dict in category_dict["projects"]:
       tags = project_dict.setdefault("tags", [])
+      project_dict["type"] = models.Project.Type.PLAYSWITH
       tags.append(category_name)
       projects_json.append(project_dict)
   return projects_json

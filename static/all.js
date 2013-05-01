@@ -172,7 +172,7 @@ v;(function(a){y(a,{bootstrap:vb,copy:W,extend:y,equals:ja,element:v,forEach:o,i
 form:pd,script:Xd,select:Zd,style:ae,option:$d,ngBind:Ad,ngBindHtmlUnsafe:Cd,ngBindTemplate:Bd,ngClass:Dd,ngClassEven:Fd,ngClassOdd:Ed,ngCsp:Id,ngCloak:Gd,ngController:Hd,ngForm:qd,ngHide:Qd,ngInclude:Kd,ngInit:Ld,ngNonBindable:Md,ngPluralize:Nd,ngRepeat:Od,ngShow:Pd,ngSubmit:Jd,ngStyle:Rd,ngSwitch:Sd,ngSwitchWhen:Td,ngSwitchDefault:Ud,ngOptions:Yd,ngView:Wd,ngTransclude:Vd,ngModel:vd,ngList:xd,ngChange:wd,required:ec,ngRequired:ec,ngValue:zd}).directive(qb).directive(fc);a.provider({$anchorScroll:xc,
 $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document:Ec,$exceptionHandler:Fc,$filter:Tb,$interpolate:Gc,$http:Zc,$httpBackend:$c,$location:Kc,$log:Lc,$parse:Pc,$route:Sc,$routeParams:Tc,$rootScope:Uc,$q:Qc,$sniffer:Vc,$templateCache:Bc,$timeout:dd,$window:Wc})}])})(Ia);v(V).ready(function(){mc(V,vb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');function load_projects($scope, $http) {
   var url = "/rpc/project.get_project_list";
-  $http({method: "POST", url: url, data: {} }).
+  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.data = data;
@@ -187,7 +187,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
 
 function load_project_requests($scope, $http) {
   var url = "/rpc/project.get_project_request_list";
-  $http({method: "POST", url: url, data: {} }).
+  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.requests = data.requests;
@@ -266,7 +266,7 @@ directives.newProjectRequest = function () {
     restrict: "A",
     scope: {},
     controller: function ($scope, $http) {
-      $scope.request = {project: {} };
+      $scope.request = {project: {type: "PLAYSWITH"} };
     },
 
     template: "<div edit-project-request request=\"request\"></div>",

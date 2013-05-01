@@ -13,14 +13,19 @@ package = "org.angularjs.playswith"
 
 
 class Project(messages.Message):
+  class Type(messages.Enum):
+    PLAYSWITH = 1
+    BUILTWITH = 2
+
   id  = messages.StringField(1)
-  name  = messages.StringField(2)
-  description  = messages.StringField(3)
-  tags  = messages.StringField(4, repeated=True)
-  url  = messages.StringField(5)
-  info_url  = messages.StringField(6)
-  src_url  = messages.StringField(7)
-  thumbnail_url  = messages.StringField(8)
+  type = messages.EnumField(Type, 2, required=True)
+  name  = messages.StringField(3)
+  description  = messages.StringField(4)
+  tags  = messages.StringField(5, repeated=True)
+  url  = messages.StringField(6)
+  info_url  = messages.StringField(7)
+  src_url  = messages.StringField(8)
+  thumbnail_url  = messages.StringField(9)
 
 
 def sanitize_project(project):
@@ -42,6 +47,7 @@ class ProjectModel(ndb.Model):
       Project,
       indexed_fields=[
           "id",
+          "type",
           "name",
           "tags",
           ]
@@ -62,6 +68,7 @@ class ProjectRequestModel(ndb.Model):
       ProjectRequest,
       indexed_fields=[
           "project.id",
+          "project.type",
           "project.name",
           "project.tags",
           "submitter_email",
@@ -74,6 +81,7 @@ class ApprovedProjectRequestModel(ndb.Model):
       ProjectRequest,
       indexed_fields=[
           "project.id",
+          "project.type",
           "project.name",
           "project.tags",
           "submitter_email",
@@ -85,6 +93,7 @@ class RejectedProjectRequestModel(ndb.Model):
       ProjectRequest,
       indexed_fields=[
           "project.id",
+          "project.type",
           "project.name",
           "project.tags",
           "submitter_email",
@@ -99,3 +108,9 @@ class ProjectList(messages.Message):
 
 class ProjectRequestList(messages.Message):
   requests = messages.MessageField(ProjectRequest, 1, repeated=True)
+
+
+# RPC related messages.
+
+class ProjectTypeQuery(messages.Message):
+  type = messages.EnumField(Project.Type, 1, required=True)

@@ -2,7 +2,7 @@
 
 function load_projects($scope, $http) {
   var url = "/rpc/project.get_project_list";
-  $http({method: "POST", url: url, data: {} }).
+  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.data = data;
@@ -17,7 +17,7 @@ function load_projects($scope, $http) {
 
 function load_project_requests($scope, $http) {
   var url = "/rpc/project.get_project_request_list";
-  $http({method: "POST", url: url, data: {} }).
+  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.requests = data.requests;
@@ -121,7 +121,7 @@ directives.newProjectRequest = function () {
     restrict: "A",
     scope: {},
     controller: function ($scope, $http) {
-      $scope.request = {project: {} };
+      $scope.request = {project: {type: "PLAYSWITH"} };
     },
 
     template: {% filter to_json -%}

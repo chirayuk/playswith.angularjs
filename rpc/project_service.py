@@ -31,9 +31,10 @@ def get_project_request_by_id(project_request_id):
 
 
 class ProjectService(remote.Service):
-  @remote.method(message_types.VoidMessage, models.ProjectList)
+  @remote.method(models.ProjectTypeQuery, models.ProjectList)
   def get_project_list(self, request):
-    query = models.ProjectModel.query()
+    query = models.ProjectModel.query(
+        models.ProjectModel.msg.type == request.type)
     projects = query.iter()
     return models.ProjectList(projects=[project.msg for project in projects])
 
@@ -75,9 +76,10 @@ class ProjectService(remote.Service):
     return project_request
 
 
-  @remote.method(message_types.VoidMessage, models.ProjectRequestList)
+  @remote.method(models.ProjectTypeQuery, models.ProjectRequestList)
   def get_project_request_list(self, request):
-    query = models.ProjectRequestModel.query()
+    query = models.ProjectRequestModel.query(
+        models.ProjectRequestModel.msg.project.type == request.type)
     project_models = list(query.iter())
     for model in project_models:
       model.msg.id = model.key.urlsafe()
