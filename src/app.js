@@ -2,7 +2,7 @@
 
 function load_projects($scope, $http) {
   var url = "/rpc/project.get_project_list";
-  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
+  $http({method: "POST", url: url, data: {type: $scope.type} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.data = data;
@@ -17,7 +17,7 @@ function load_projects($scope, $http) {
 
 function load_project_requests($scope, $http) {
   var url = "/rpc/project.get_project_request_list";
-  $http({method: "POST", url: url, data: {type: "PLAYSWITH"} }).
+  $http({method: "POST", url: url, data: {type: $scope.type} }).
       success(function(data, status) {
           $scope.status = status;
           $scope.requests = data.requests;
@@ -133,15 +133,17 @@ directives.newProjectRequest = function () {
 
     controller: function ($scope, $http) {
       $scope.request = {project: {type: $scope.type} };
+      console.log("CKCK: type=%O, request=%O", $scope.type, $scope.request);
     },
-
-    template: {% filter to_json -%}
-      <div edit-project-request request="request"></div>
-      {%- endfilter %},
 
     link: function($scope) {
       console.log("newProjectRequest: link: request = %O", $scope.request);
-    }
+    },
+
+    template: {% filter to_json -%}
+      <div edit-project-request type="type" request="request"></div>
+      {%- endfilter %}
+
   };
 };
 
@@ -151,11 +153,12 @@ directives.editProjectRequest = function () {
   return {
     restrict: "A",
     scope: {
+      type: "=",
       request: "=",
       onUpdate: "&"
     },
     link: function($scope) {
-      console.log("editProjectRequest: link: request = %O", $scope.request);
+      console.log("editProjectRequest: link: type = %O, request = %O", $scope.type, $scope.request);
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
@@ -230,12 +233,16 @@ directives.editProjectRequest = function () {
                 <input ng-model="request.project.url" type="text" id="inputURL" placeholder="Main URL">
               </div>
           </div>
-          <div class="control-group">
-            <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
-              <div class="controls">
-                <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
-                <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
+          <div ng-switch on="type">
+            <div ng-switch-when="BUILTWITH">
+              <div class="control-group">
+                <label class="control-label" for="inputThumbnailUrl">Thumbnail URL</label>
+                  <div class="controls">
+                    <input ng-model="request.thumbnail_url" type="text" id="inputThumbnailUrl" placeholder="http://">
+                    <p class="muted">A copy of this image will be stored on the server and used.  This link must serve a jpeg or png image.</p>
+                  </div>
               </div>
+            </div>
           </div>
           <div class="control-group">
             <label class="control-label" for="inputTagsCsv">Tags (csv)</label>
@@ -323,6 +330,7 @@ directives.projectRequestWithEdit = function () {
   return {
     restrict: "A",
     scope: {
+      type: "=",
       request: "="
     },
     controller: function($scope, $http) {
@@ -383,10 +391,10 @@ directives.projectRequestWithEdit = function () {
           <b>{{request.project.name}}</b>&nbsp;&nbsp;<span class="label label-warning">Rejected!</span>
         </div>
         <div ng-switch-when="edit">
-          <div edit-project-request request="request" on-update="doneEditing()"></div>
+          <div edit-project-request type="type" request="request" on-update="doneEditing()"></div>
         </div>
         <div ng-switch-when="display">
-          <div project-request request="request"></div><br>
+          <div project-request type="type" request="request"></div><br>
           <div class="center">
             <a ng-click="approve(request)" class="btn btn-primary"><i class="icon-ok icon-large"></i>
               Approve

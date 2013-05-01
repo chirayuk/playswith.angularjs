@@ -195,7 +195,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
     
   </script>
   <script src="/static/app.js" type="text/javascript" charset="utf-8"></script>
-  <link rel="stylesheet" href="/static/playswith.css">
+  <link rel="stylesheet" href="/static/app.css">
   
 </head>
 
@@ -207,7 +207,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
       <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="http://angularjs.org/" style="padding-top: 6px; padding-bottom: 0px;">
-            <img class="AngularJS-small" src="img/AngularJS-small.png">
+            <img class="AngularJS-small" src="/img/AngularJS-small.png">
           </a>
           <ul class="nav">
             <li class="divider-vertical"></li>
@@ -271,7 +271,7 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   <h1>Placeholder: playswith and builtwith</h1>
   <a href="/create">Submit a project</a>&nbsp;&nbsp;
   <a href="/pending">See submissions</a>
-  <div ng-controller="homepageController">
+  <div ng-controller="playswithRootController">
     <br/> <br/> <br/>
     <div ng-repeat="project in data.projects">
       <div project-info-small project="project"></div>

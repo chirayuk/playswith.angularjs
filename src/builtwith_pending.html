@@ -1,0 +1,15 @@
+{% extends "src/base.html" %}
+
+{% block title %}Awaiting Approval | Built with AngularJS{% endblock %}
+
+{% block main_content %}
+  <div ng-controller="builtwithRootController">
+    <div ng-controller="projectRequestsController">
+      <h1>Pending Projects</h1>
+      <div ng-repeat="request in requests">
+        <div project-request-with-edit type="type" request="request"></div>
+        <hr>
+      </div>
+    </div>
+  </div>
+{% endblock %}
