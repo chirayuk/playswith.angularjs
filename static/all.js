@@ -233,16 +233,48 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
 
 var directives = playsWith.directives = {};
 
-directives.projectInfoSmall = function () {
-  console.log("directives.projectInfoSmall");
+
+directives.playswithProjectSummary = function () {
+  console.log("directives.playswithProjectSummary");
   return {
     restrict: "A",
-    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\" class=\"row\">\n            <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n            <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n          </div>\n        </div>\n        <span ng-show=\"project.tags\">\n          <br><span project-tags=\"project.tags\"></span>\n        </span>\n      </div>",
+    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <span ng-show=\"project.tags\">\n          <br><span project-tags=\"project.tags\"></span>\n        </span>\n      </div>",
     scope: {
       project: "="
     },
     link: function($scope) {
-      console.log("projectInfoSmall: link: project = %O", $scope.project);
+      console.log("playswithProjectSummary: link: project = %O", $scope.project);
+    }
+  };
+};
+
+
+directives.builtwithProjectSummary = function () {
+  console.log("directives.builtwithProjectSummary");
+  return {
+    restrict: "A",
+    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n        <div ng-show=\"project.tags\">\n          Tags: <span project-tags=\"project.tags\"></span>\n        </div>\n      </div>\n      <br>",
+    scope: {
+      project: "="
+    },
+    link: function($scope) {
+      console.log("builtwithProjectSummary: link: project = %O", $scope.project);
+    }
+  };
+};
+
+
+directives.projectSummary = function () {
+  console.log("directives.projectSummary");
+  return {
+    restrict: "A",
+    template: "<div ng-switch on=\"type\">\n        <div ng-switch-when=\"BUILTWITH\">\n          <div builtwith-project-summary project=\"project\"></div>\n        </div>\n        <div ng-switch-when=\"PLAYSWITH\">\n          <div playswith-project-summary project=\"project\"></div>\n        </div>\n      </div>",
+    scope: {
+      project: "=",
+      type: "=",
+    },
+    link: function($scope) {
+      console.log("projectSummary: link: project = %O", $scope.project);
     }
   };
 };
@@ -364,7 +396,7 @@ directives.projectRequest = function () {
     },
     template: "\n      <div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Name</div>\n          <div class=\"span10\"><b>{{request.project.name}}</b></div>\n        </div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Description</div>\n          <div class=\"span10\" ng-bind-html-unsafe=\"request.project.description\"></div>\n        </div>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\" class=\"row\">\n            <div class=\"span2 pwa-item-label\">Website</div>\n            <div class=\"span10\"><a href=\"{{request.project.url}}\">{{request.project.url}}</a></div>\n          </div>\n        </div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Tags</div>\n          <div class=\"span10\">\n            <span project-tags=\"request.project.tags\"></span>\n          </div>\n        </div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Submitter E-mail</div>\n          <div class=\"span10\">{{request.submitter_email}}</div>\n        </div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Submission time</div>\n          <div class=\"span10\">{{request.submission_timestamp | utcTimestampToDate:\"medium\" }}</div>\n        </div>\n        <div class=\"row\">\n          <div class=\"span2 pwa-item-label\">Thumbnail</div>\n          <div class=\"span10\" ng-show=\"request.project.thumbnail_url\"><img ng-src=\"{{request.project.thumbnail_url}}\"></div>\n        </div>",
     link: function($scope) {
-      console.log("projectInfoSmall: link: request = %O", $scope.request);
+      console.log("projectRequest: link: request = %O", $scope.request);
     }
   };
 };

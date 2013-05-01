@@ -63,20 +63,15 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
 
 var directives = playsWith.directives = {};
 
-directives.projectInfoSmall = function () {
-  console.log("directives.projectInfoSmall");
+
+directives.playswithProjectSummary = function () {
+  console.log("directives.playswithProjectSummary");
   return {
     restrict: "A",
     template: {% filter to_json -%}
       <div>
         <h3>{{project.name}}</h3>
         <div ng-bind-html-unsafe="project.description"></div>
-        <div ng-switch on="type">
-          <div ng-switch-when="BUILTWITH" class="row">
-            <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
-            <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
-          </div>
-        </div>
         <span ng-show="project.tags">
           <br><span project-tags="project.tags"></span>
         </span>
@@ -86,7 +81,57 @@ directives.projectInfoSmall = function () {
       project: "="
     },
     link: function($scope) {
-      console.log("projectInfoSmall: link: project = %O", $scope.project);
+      console.log("playswithProjectSummary: link: project = %O", $scope.project);
+    }
+  };
+};
+
+
+directives.builtwithProjectSummary = function () {
+  console.log("directives.builtwithProjectSummary");
+  return {
+    restrict: "A",
+    template: {% filter to_json -%}
+      <div>
+        <h3>{{project.name}}</h3>
+        <div ng-bind-html-unsafe="project.description"></div>
+        <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
+        <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
+        <div ng-show="project.tags">
+          Tags: <span project-tags="project.tags"></span>
+        </div>
+      </div>
+      {%- endfilter %},
+    scope: {
+      project: "="
+    },
+    link: function($scope) {
+      console.log("builtwithProjectSummary: link: project = %O", $scope.project);
+    }
+  };
+};
+
+
+directives.projectSummary = function () {
+  console.log("directives.projectSummary");
+  return {
+    restrict: "A",
+    template: {% filter to_json -%}
+      <div ng-switch on="type">
+        <div ng-switch-when="BUILTWITH">
+          <div builtwith-project-summary project="project"></div>
+        </div>
+        <div ng-switch-when="PLAYSWITH">
+          <div playswith-project-summary project="project"></div>
+        </div>
+      </div>
+      {%- endfilter %},
+    scope: {
+      project: "=",
+      type: "=",
+    },
+    link: function($scope) {
+      console.log("projectSummary: link: project = %O", $scope.project);
     }
   };
 };
@@ -342,7 +387,7 @@ directives.projectRequest = function () {
         
       {%- endfilter %},
     link: function($scope) {
-      console.log("projectInfoSmall: link: request = %O", $scope.request);
+      console.log("projectRequest: link: request = %O", $scope.request);
     }
   };
 };
