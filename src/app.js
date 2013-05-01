@@ -71,11 +71,15 @@ directives.projectInfoSmall = function () {
       <div>
         <h3>{{project.name}}</h3>
         <div ng-bind-html-unsafe="project.description"></div>
-        <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
+        <div ng-switch on="type">
+          <div ng-switch-when="BUILTWITH" class="row">
+            <p>Website: <a rel="nofollow" href="{{project.url}}">{{project.url}}</a></p>
+            <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
+          </div>
+        </div>
         <span ng-show="project.tags">
-          Tags: <span project-tags="project.tags"></span>
+          <br><span project-tags="project.tags"></span>
         </span>
-        <div ng-show="project.thumbnail_url"><img ng-src="{{project.thumbnail_url}}">
       </div>
       {%- endfilter %},
     scope: {
@@ -298,6 +302,7 @@ directives.projectRequest = function () {
   return {
     restrict: "A",
     scope: {
+      type: "=",
       request: "="
     },
     template: {% filter to_json %}
@@ -310,9 +315,11 @@ directives.projectRequest = function () {
           <div class="span2 pwa-item-label">Description</div>
           <div class="span10" ng-bind-html-unsafe="request.project.description"></div>
         </div>
-        <div class="row">
-          <div class="span2 pwa-item-label">Website</div>
-          <div class="span10"><a href="{{request.project.url}}">{{request.project.url}}</a></div>
+        <div ng-switch on="type">
+          <div ng-switch-when="BUILTWITH" class="row">
+            <div class="span2 pwa-item-label">Website</div>
+            <div class="span10"><a href="{{request.project.url}}">{{request.project.url}}</a></div>
+          </div>
         </div>
         <div class="row">
           <div class="span2 pwa-item-label">Tags</div>

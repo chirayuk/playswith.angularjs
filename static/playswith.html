@@ -272,10 +272,11 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   <a href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
   <a href="/playswith/pending">See submissions</a>
   <div ng-controller="playswithRootController">
-    <div ng-controller="homepageController">
+    <div class="row" ng-controller="homepageController">
       <br/> <br/> <br/>
       <div ng-repeat="project in data.projects">
-        <div project-info-small project="project"></div>
+        <!-- TODO(chirayu): Remove height=300px -->
+        <div style="height: 300px" class="span4" project-info-small type="type" project="project"></div>
       </div>
     </div>
   </div>
