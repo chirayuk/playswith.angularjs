@@ -1,9 +1,11 @@
 {% extends "src/base.html" %}
 
+{% block title %}Related Projects | AngularJS{% endblock %}
+
 {% block main_content %}
-  <h1>Placeholder: playswith and builtwith</h1>
-  <a href="/create">Submit a project</a>&nbsp;&nbsp;
-  <a href="/pending">See submissions</a>
+  <h1>AngularJS Projects</h1>
+  <a href="/playswith">Plays along with AngularJS</a>&nbsp;&nbsp;
+  <a href="/builtwith">Built with AngularJS</a>
   <div ng-controller="playswithRootController">
     <br/> <br/> <br/>
     <div ng-repeat="project in data.projects">
