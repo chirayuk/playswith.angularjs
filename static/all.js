@@ -253,7 +253,7 @@ directives.builtwithProjectSummary = function () {
   console.log("directives.builtwithProjectSummary");
   return {
     restrict: "A",
-    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n        <div ng-show=\"project.tags\">\n          Tags: <span project-tags=\"project.tags\"></span>\n        </div>\n      </div>\n      <br>",
+    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <p>Website: <a rel=\"nofollow\" href=\"{{project.url}}\">{{project.url}}</a></p>\n        <div ng-show=\"project.thumbnail_url\"><img ng-src=\"{{project.thumbnail_url}}\">\n        <div ng-show=\"project.tags\">\n          Tags: <span project-tags=\"project.tags\"></span>\n        </div>\n      </div>",
     scope: {
       project: "="
     },
@@ -295,7 +295,7 @@ directives.previewProjectRequest = function () {
   console.log("directives.previewProjectRequest");
   return {
     restrict: "A",
-    template: "<div class=\"well\">\n        <h3>{{request.project.name}}</h3>\n        <div ng-bind-html-unsafe=\"request.project.description\"></div>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\">\n            <p ng-show=\"request.project.url\">Website: <a rel=\"nofollow\" href=\"{{request.project.url}}\">{{request.project.url}}</a></p>\n          </div>\n        </div>\n        <span ng-show=\"request.project.tags\">\n          Tags: <span project-tags=\"request.project.tags\"></span>\n        </span>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\">\n            <div ng-show=\"request.thumbnail_url\">\n              <img ng-src=\"{{request.thumbnail_url}}\">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div>\n        <span ng-show=\"request.submitter_email\">\n          <b>Submitter E-Mail</b>:\n          {{request.submitter_email}}\n        </span>\n      <div>",
+    template: "<div class=\"well\">\n        <h3>{{request.project.name}}</h3>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\">\n            <div ng-show=\"request.thumbnail_url\">\n              <img ng-src=\"{{request.thumbnail_url}}\">\n            </div>\n          </div>\n        </div>\n        <div ng-bind-html-unsafe=\"request.project.description\"></div>\n        <div ng-switch on=\"type\">\n          <div ng-switch-when=\"BUILTWITH\">\n            <p ng-show=\"request.project.url\">Website: <a rel=\"nofollow\" href=\"{{request.project.url}}\">{{request.project.url}}</a></p>\n          </div>\n        </div>\n        <span ng-show=\"request.project.tags\">\n          Tags: <span project-tags=\"request.project.tags\"></span>\n        </span>\n      </div>\n      <div>\n        <span ng-show=\"request.submitter_email\">\n          <b>Submitter E-Mail</b>:\n          {{request.submitter_email}}\n        </span>\n      <div>",
   };
 }
 

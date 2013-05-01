@@ -160,6 +160,13 @@ directives.previewProjectRequest = function () {
     template: {% filter to_json -%}
       <div class="well">
         <h3>{{request.project.name}}</h3>
+        <div ng-switch on="type">
+          <div ng-switch-when="BUILTWITH">
+            <div ng-show="request.thumbnail_url">
+              <img ng-src="{{request.thumbnail_url}}">
+            </div>
+          </div>
+        </div>
         <div ng-bind-html-unsafe="request.project.description"></div>
         <div ng-switch on="type">
           <div ng-switch-when="BUILTWITH">
@@ -169,13 +176,6 @@ directives.previewProjectRequest = function () {
         <span ng-show="request.project.tags">
           Tags: <span project-tags="request.project.tags"></span>
         </span>
-        <div ng-switch on="type">
-          <div ng-switch-when="BUILTWITH">
-            <div ng-show="request.thumbnail_url">
-              <img ng-src="{{request.thumbnail_url}}">
-            </div>
-          </div>
-        </div>
       </div>
       <div>
         <span ng-show="request.submitter_email">
