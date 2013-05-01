@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
 
+import logging
+logger = logging.getLogger(__name__)
+
 import config
 import flask
 import mimetypes
@@ -21,10 +24,15 @@ CACHE_CONTROL_MAXCACHE = "public, max-age={0}".format(CACHE_MAX_AGE)
 # additional headers.
 @app.route('/serve_blob/<encoded_image_info>')
 def serve_blob(encoded_image_info):
+  logger.info("serve_blob: encoded_image_info=%r", encoded_image_info)
   # Strip extension.
   encoded_image_info = encoded_image_info.rsplit(".", 1)[0]
   # Decode to ImageInfo.
-  image_info = image_utils.decode_image_info(encoded_image_info)
+  try:
+    image_info = image_utils.decode_image_info(encoded_image_info)
+  except Exception, e:
+    logger.error("serve_blob: Error while decoding encoded_image_info=%r", encoded_image_info)
+    raise
   filename = "image{0}".format(
       mimetypes.guess_extension(image_info.mimetype))
   content_disposition = "attachment; filename=\"{0}\"".format(filename)
@@ -38,6 +46,7 @@ def serve_blob(encoded_image_info):
     "Last-Modified": "Fri, 01 Jan 1990 00:00:00 GMT",
     "Cache-Control": CACHE_CONTROL_MAXCACHE,
     }
+  logger.info("serve_blob: Serving blob with key: %s", image_info.blobkey)
   return (u"", 200, headers)
 
 

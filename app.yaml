@@ -1,5 +1,5 @@
 application: angular-ck
-version: 1
+version: alpha
 runtime: python27
 threadsafe: true
 api_version: 1
@@ -67,14 +67,6 @@ handlers:
 - url: /playswith/pending
   static_files: static/playswith_pending.html
   upload: static/playswith_pending.html
-
-- url: /create
-  static_files: static/create_project.html
-  upload: static/create_project.html
-
-- url: /pending
-  static_files: static/pending.html
-  upload: static/pending.html
 
 - url: /
   static_files: index.html
