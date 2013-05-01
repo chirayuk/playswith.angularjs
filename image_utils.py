@@ -36,16 +36,14 @@ class ImageInfo(messages.Message):
 
 @utils.log_exceptions
 def encode_image_info(image_info):
-  text = "{0}.{1}".format(
-      image_info.blobkey,
-      urllib.quote_plus(image_info.mimetype))
-  return sign.default_signer.sign(text)
+  text = "{0}.{1}".format(image_info.blobkey, image_info.mimetype)
+  return urllib.quote_plus(sign.default_signer.sign(text))
 
 @utils.log_exceptions
-def decode_image_info(blob):
-  text = sign.default_signer.unsign(blob)
-  blobkey, mimetype_urlsafe = text.rsplit(".", 1)
-  mimetype = urllib.unquote_plus(mimetype_urlsafe)
+def decode_image_info(text):
+  text = urllib.unquote_plus(text)
+  text = sign.default_signer.unsign(text)
+  blobkey, mimetype = text.rsplit(".", 1)
   return ImageInfo(blobkey=blobkey, mimetype=mimetype)
 
 @utils.log_exceptions
