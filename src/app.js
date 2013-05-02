@@ -67,7 +67,7 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
 
 var directives = playsWith.directives = {};
 
-{% include "src/playswith.js" with context -%}
+{% include "src/playswith/playswith.js" with context -%}
 
 
 directives.playswithProjectSummary = function () {

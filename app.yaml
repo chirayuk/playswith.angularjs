@@ -44,33 +44,13 @@ handlers:
 - url: /rpc/.*
   script: rpc.app
 
-- url: /builtwith
-  static_files: static/builtwith.html
-  upload: static/builtwith.html
+- url: /(playswith|builtwith)
+  static_files: static/\1/index.html
+  upload: static/(playswith|builtwith)/index.html
 
-- url: /builtwith/create
-  static_files: static/builtwith_create.html
-  upload: static/builtwith_create.html
-
-- url: /builtwith/pending
-  static_files: static/builtwith_pending.html
-  upload: static/builtwith_pending.html
-
-- url: /playswith
-  static_files: static/playswith.html
-  upload: static/playswith.html
-
-- url: /playswith/create
-  static_files: static/playswith_create.html
-  upload: static/playswith_create.html
-
-- url: /playswith/pending
-  static_files: static/playswith_pending.html
-  upload: static/playswith_pending.html
-
-- url: /playswith/edit_homepage
-  static_files: static/playswith_edit_homepage.html
-  upload: static/playswith_edit_homepage.html
+- url: /(playswith|builtwith)/(.*)
+  static_files: static/\1/\2.html
+  upload: static/(playswith|builtwith)/(.*)
 
 - url: /
   static_files: index.html

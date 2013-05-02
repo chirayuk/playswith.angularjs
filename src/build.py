@@ -31,14 +31,14 @@ def build_all():
       ("src/app.js", "static/app.js"),
       ("src/index.html", "index.html"),
       # playswith
-      ("src/playswith.html", "static/playswith.html"),
-      ("src/playswith_create.html", "static/playswith_create.html"),
-      ("src/playswith_pending.html", "static/playswith_pending.html"),
-      ("src/playswith_edit_homepage.html", "static/playswith_edit_homepage.html"),
+      ("src/playswith/playswith.html", "static/playswith/index.html"),
+      ("src/playswith/create.html", "static/playswith/create.html"),
+      ("src/playswith/pending.html", "static/playswith/pending.html"),
+      ("src/playswith/edit_homepage.html", "static/playswith/edit_homepage.html"),
       # builtwith
-      ("src/builtwith.html", "static/builtwith.html"),
-      ("src/builtwith_create.html", "static/builtwith_create.html"),
-      ("src/builtwith_pending.html", "static/builtwith_pending.html"),
+      ("src/builtwith/builtwith.html", "static/builtwith/index.html"),
+      ("src/builtwith/create.html", "static/builtwith/create.html"),
+      ("src/builtwith/pending.html", "static/builtwith/pending.html"),
       # CSS
       (["src/css/bootstrap.min.css",
         "src/css/docs.css",
