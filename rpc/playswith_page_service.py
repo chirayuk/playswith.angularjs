@@ -17,6 +17,7 @@ ndb = google.appengine.ext.ndb
 import key_ids
 import models
 import playswith_model
+from . import project_service
 
 package = "org.angularjs.playswith"
 
@@ -62,3 +63,10 @@ class PlayswithPageService(remote.Service):
   def get_homepage_expanded(self, request):
     model = get_homepage_expanded_model()
     return model.msg
+
+  @remote.method(message_types.VoidMessage, playswith_model.StartupData)
+  def get_startup_data(self, request):
+    homepage = get_homepage_model().msg
+    projects = project_service.get_project_list(
+        type=models.Project.Type.PLAYSWITH).projects
+    return playswith_model.StartupData(homepage=homepage, projects=projects)

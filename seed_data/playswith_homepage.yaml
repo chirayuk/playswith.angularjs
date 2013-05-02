@@ -12,10 +12,10 @@ sections:
 - !section
   title: Development
   project_ids:
-  - Testacular
+  - Karma
   - Batarang
   - Yeoman
-  - Webstorm
+  - WebStorm
   - Sublime Text
 
 - !section

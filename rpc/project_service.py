@@ -24,19 +24,25 @@ class Error(Exception):
   pass
 
 
-
 def get_project_request_by_id(project_request_id):
-    project_request = ndb.Key(urlsafe=project_request_id).get()
-    return project_request
+    key = ndb.Key(models.ProjectRequestModel, project_request_id)
+    return key.get()
+
+
+def get_project_list(type):
+  query = models.ProjectModel.query(
+      models.ProjectModel.msg.type == type)
+  project_models = list(query.iter())
+  for project_model in project_models:
+    project_model.msg.id = str(project_model.key.id())
+  return models.ProjectList(projects=[
+      project_model.msg for project_model in project_models])
 
 
 class ProjectService(remote.Service):
   @remote.method(models.ProjectTypeQuery, models.ProjectList)
   def get_project_list(self, request):
-    query = models.ProjectModel.query(
-        models.ProjectModel.msg.type == request.type)
-    projects = query.iter()
-    return models.ProjectList(projects=[project.msg for project in projects])
+    return get_project_list(type=request.type)
 
   @remote.method(models.ProjectRequest, models.ProjectRequest)
   def create_project_request(self, project_request):
@@ -52,7 +58,7 @@ class ProjectService(remote.Service):
     models.sanitize_project(project_request.project)
     project_request_model = models.ProjectRequestModel(msg=project_request)
     key = project_request_model.put()
-    project_request.id = key.urlsafe()
+    project_request.id = str(key.id())
     return project_request
 
   @remote.method(models.ProjectRequest, models.ProjectRequest)
@@ -82,8 +88,7 @@ class ProjectService(remote.Service):
         models.ProjectRequestModel.msg.project.type == request.type)
     project_models = list(query.iter())
     for model in project_models:
-      model.msg.id = model.key.urlsafe()
-      logging.warn("CKCK: id = {0}".format(model.key))
+      model.msg.id = str(model.key.id())
     return models.ProjectRequestList(requests=[model.msg for model in project_models])
 
   @remote.method(models.ProjectRequest, models.ProjectRequest)
@@ -96,7 +101,7 @@ class ProjectService(remote.Service):
     approved_model.put()
     project_model = models.ProjectModel(msg=project_request.project, parent=project_request_model.key)
     key = project_model.put()
-    project_request.id = key.urlsafe()
+    project_request.id = str(key.id())
     project_request_model.key.delete()
     return project_request
 
@@ -107,6 +112,6 @@ class ProjectService(remote.Service):
     rejected_model = models.RejectedProjectRequestModel(
         msg=project_request, parent=project_request_model.key)
     key = rejected_model.put()
-    project_request.id = key.urlsafe()
+    project_request.id = str(key.id())
     project_request_model.key.delete()
     return project_request

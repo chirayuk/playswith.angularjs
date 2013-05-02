@@ -53,3 +53,8 @@ class HomePageModel(ndb.Model):
 
 class HomePageExpandedModel(ndb.Model):
   msg = ndb.msgprop.MessageProperty(HomePageExpanded)
+
+
+class StartupData(messages.Message):
+  homepage = messages.MessageField(HomePage, 1)
+  projects = messages.MessageField(models.Project, 2, repeated=True)
