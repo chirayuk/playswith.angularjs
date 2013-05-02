@@ -30,6 +30,8 @@ function load_project_requests($scope, $http) {
 }
 
 
+[[ get_file_contents("src/playswith.js") ]]
+
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
 function process_playswith_startup_data($scope, startup_data) {
