@@ -268,14 +268,13 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
 
   <div class="container">
     
-  <div class="row">
-    <a href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
-    <a href="/playswith/pending">See submissions</a>
-  </div>
   <div ng-controller="playswithRootController">
     <div class="row" ng-controller="playswithHomepageController">
       <h1>{{homepage.title}}</h1>
       <p ng-show="homepage.description">{{homepage.description}}</p>
+      <br>
+      <a class="btn btn-large" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
+      <a class="btn btn-large" href="/playswith/pending">See submissions</a>
       <div ng-repeat="section in homepage.sections">
         <h1>{{section.title}}</h1>
         <p ng-show="section.description">{{section.description}}</p>
