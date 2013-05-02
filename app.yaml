@@ -68,6 +68,10 @@ handlers:
   static_files: static/playswith_pending.html
   upload: static/playswith_pending.html
 
+- url: /playswith/edit_homepage
+  static_files: static/playswith_edit_homepage.html
+  upload: static/playswith_edit_homepage.html
+
 - url: /
   static_files: index.html
   upload: index.html
