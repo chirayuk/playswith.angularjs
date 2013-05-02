@@ -3,15 +3,22 @@
 {% block title %}Plays with AngularJS{% endblock %}
 
 {% block main_content %}
-  <h1>Plays with AngularJS</h1>
-  <a href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
-  <a href="/playswith/pending">See submissions</a>
+  <div class="row">
+    <h1>Plays with AngularJS</h1>
+    <a href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
+    <a href="/playswith/pending">See submissions</a>
+  </div>
   <div ng-controller="playswithRootController">
-    <div class="row" ng-controller="homepageController">
-      <br/> <br/> <br/>
-      <div ng-repeat="project in data.projects">
-        <!-- TODO(chirayu): Remove height=300px -->
-        <div style="height: 300px" class="span4" project-summary type="type" project="project"></div>
+    <div class="row" ng-controller="playswithHomepageController">
+      <h2>{{homepage.title}}</h2>
+      <p ng-show="homepage.description">{{homepage.description}}</p>
+      <div ng-repeat="section in homepage.sections">
+        <h2>{{section.title}}</h2>
+        <p ng-show="section.description">{{section.description}}</p>
+        <div ng-repeat="project in section.projects">
+          <!-- TODO(chirayu): Remove height=300px -->
+          <div style="height: 300px" class="span4" project-summary type="type" project="project"></div>
+        </div>
       </div>
     </div>
   </div>

@@ -15,7 +15,12 @@ from protorpc import remote
 import google.appengine.ext.ndb.msgprop
 ndb = google.appengine.ext.ndb
 
+import key_ids
 import models
+import playswith_model
+import utils
+
+from . import playswith_page_service
 
 package = "org.angularjs.playswith"
 logger = logging.getLogger(__name__)
@@ -80,16 +85,58 @@ def _get_default_projects():
   return [models.Project(**project_dict) for project_dict in projects_json]
 
 
-def _create_project(project):
+def _create_project(project, id=None):
   models.sanitize_project(project)
-  project_model = models.ProjectModel(msg=project)
+  project_model = models.ProjectModel(msg=project, id=id)
   key = project_model.put()
   project.id = key.urlsafe()
   return project
 
 
+# Define some yaml helpers here.
+
+def parse_yaml_section(loader, node):
+  return playswith_model.Section(
+      **loader.construct_mapping(node, deep=True))
+yaml.add_constructor(u"!section", parse_yaml_section)
+
+def parse_yaml_playswith_homepage(loader, node):
+  return playswith_model.HomePage(
+      **loader.construct_mapping(node, deep=True))
+yaml.add_constructor(u"!playswith_homepage", parse_yaml_playswith_homepage)
+
+
+def _get_playswith_homepage():
+  with io.open("seed_data/playswith_homepage.yaml", "rt", encoding="utf8") as f:
+    homepage = yaml.load(f)
+    logger.info("_get_playswith_homepage: %r", homepage)
+    return homepage
+
+def _get_playswith_homepage_model():
+  homepage = _get_playswith_homepage()
+  model = playswith_model.HomePageModel(
+      msg=homepage, id=key_ids.PLAYSWITH_HOMEPAGE_ID)
+  return model
+
+def _get_playswith_homepage_expanded_model():
+  homepage = _get_playswith_homepage()
+  homepage_expanded = playswith_page_service.expand_homepage(homepage)
+  model = playswith_model.HomePageExpandedModel(
+      msg=homepage_expanded, id=key_ids.PLAYSWITH_HOMEPAGE_ID)
+  return model
+
+def _lookup_playswith_homepage_model():
+  key = ndb.Key(playswith_model.HomePageModel, key_ids.PLAYSWITH_HOMEPAGE_ID)
+  return key.get()
+
+def _lookup_playswith_homepage_expanded_model():
+  key = ndb.Key(playswith_model.HomePageExpandedModel, key_ids.PLAYSWITH_HOMEPAGE_ID)
+  return key.get()
+
+
 class TestService(remote.Service):
   @remote.method(message_types.VoidMessage, DebugDump)
+  @utils.log_exceptions
   def debug_dump(self, request):
     import os, pprint
     text=pprint.pformat(sorted(os.environ.items()))
@@ -98,8 +145,32 @@ class TestService(remote.Service):
 
   # Bootstrap some sample projects.
   @remote.method(message_types.VoidMessage, message_types.VoidMessage)
+  @utils.log_exceptions
   def create_test_projects(self, request):
     projects = _get_default_projects()
     for project in projects:
-      _create_project(project)
+      _create_project(project, id=project.name)
     return message_types.VoidMessage()
+
+  # Bootstrap the playswith homepage.
+  @remote.method(message_types.VoidMessage, message_types.VoidMessage)
+  @utils.log_exceptions
+  def create_playswith_homepage(self, request):
+    homepage_model = _get_playswith_homepage_model()
+    homepage_model.put()
+    return message_types.VoidMessage()
+
+  @remote.method(message_types.VoidMessage, message_types.VoidMessage)
+  @utils.log_exceptions
+  def create_playswith_homepage_expanded(self, request):
+    homepage_expanded_model = _get_playswith_homepage_expanded_model()
+    homepage_expanded_model.put()
+    return message_types.VoidMessage()
+
+  @remote.method(message_types.VoidMessage, playswith_model.HomePage)
+  def lookup_playswith_homepage(self, request):
+    return _lookup_playswith_homepage_model().msg
+
+  @remote.method(message_types.VoidMessage, playswith_model.HomePageExpanded)
+  def lookup_playswith_homepage_expanded(self, request):
+    return _lookup_playswith_homepage_expanded_model().msg

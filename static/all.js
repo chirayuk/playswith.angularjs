@@ -200,6 +200,21 @@ function load_project_requests($scope, $http) {
 }
 
 
+function load_playswith_homepage($scope, $http) {
+  var url = "/rpc/playswith_page.get_homepage_expanded";
+  $http({method: "POST", url: url, data: {} }).
+      success(function(data, status) {
+          $scope.status = status;
+          $scope.homepage = data;
+          console.log("load_playswith_homepage: %O", data);
+        }).
+      error(function(projects, status) {
+          $scope.status = status;         
+          $scope.homepage = null;
+        });
+}
+
+
 // Main app module.
 
 var playsWith = angular.module('playsWith', []);
@@ -220,7 +235,11 @@ playsWith.controller("builtwithRootController", function ($scope) {
   $scope.type = "BUILTWITH";
 });
 
-playsWith.controller("homepageController", function ($scope, $http) {
+playsWith.controller("playswithHomepageController", function ($scope, $http) {
+  $scope.homepage = load_playswith_homepage($scope, $http);
+});
+
+playsWith.controller("builtwithHomepageController", function ($scope, $http) {
   $scope.projects = load_projects($scope, $http);
 });
 

@@ -1,0 +1,35 @@
+!playswith_homepage
+title: Complimentary Libraries, Tools, and Techniques
+description: |
+    Below are several tools, libraries, tutorials, guides, etc. that we've
+    found useful in developing AngularJS applications. We can't guarantee the
+    usefulness of any of these for your particular project, but we've worked
+    with each of them to varying degrees and they all look worth investigating.
+    Do you have something we've missed and should list here? Please tell us via
+    Google+ or Twitter (+angularjs and @angularjs, respectively).
+
+sections:
+- !section
+  title: Development
+  project_ids:
+  - Testacular
+  - Batarang
+  - Yeoman
+  - Webstorm
+  - Sublime Text
+
+- !section
+  title: Deployment
+  project_ids:
+  - PhoneGap
+  - Chrome Packaged Apps
+  - UglifyJS
+
+- !section
+  title: Complimentary Libraries
+  project_ids:
+  - Angular UI
+  - Bootstrap
+  - BreezeJS
+  - jQuery Mobile
+  - Wijmo
