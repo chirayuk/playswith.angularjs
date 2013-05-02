@@ -269,16 +269,15 @@ $animation:Gb,$animator:nd,$browser:zc,$cacheFactory:Ac,$controller:Dc,$document
   <div class="container">
     
   <div class="row">
-    <h1>Plays with AngularJS</h1>
     <a href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
     <a href="/playswith/pending">See submissions</a>
   </div>
   <div ng-controller="playswithRootController">
     <div class="row" ng-controller="playswithHomepageController">
-      <h2>{{homepage.title}}</h2>
+      <h1>{{homepage.title}}</h1>
       <p ng-show="homepage.description">{{homepage.description}}</p>
       <div ng-repeat="section in homepage.sections">
-        <h2>{{section.title}}</h2>
+        <h1>{{section.title}}</h1>
         <p ng-show="section.description">{{section.description}}</p>
         <div ng-repeat="project in section.projects">
           <!-- TODO(chirayu): Remove height=300px -->
