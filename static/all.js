@@ -201,7 +201,6 @@ function load_project_requests($scope, $http) {
 
 
 // Main app module.
-
 var playsWith = angular.module('playsWith', []);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
@@ -212,16 +211,8 @@ playsWith.filter("utcTimestampToDate", function ($filter) {
 });
 
 
-playsWith.controller("playswithRootController", function ($scope) {
-  $scope.type = "PLAYSWITH";
-});
-
 playsWith.controller("builtwithRootController", function ($scope) {
   $scope.type = "BUILTWITH";
-});
-
-playsWith.controller("playswithHomepageController", function ($scope, $http, $q) {
-  load_playswith_startup_data($scope, $http, $q);
 });
 
 playsWith.controller("builtwithHomepageController", function ($scope, $http) {
@@ -237,16 +228,35 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
 
 var directives = playsWith.directives = {};
 
+directives.singleFormControlGroup = function () {
+  console.log("directives.singleFormControlGroup");
+  return {
+    restrict: "A",
+    replace: true,
+    transclude: true,
+    scope: {
+      id: "@",
+      label: "@"
+    },
+    link: function (scope, elem, attrs) {
+      console.log("scope: %O, elem: %O, attrs: %O",
+                  scope, elem, attrs);
+      // attrs.$set("id", scope.id);
+    },
+    template: "<div class=\"control-group\">\n        <label for=\"{{id}}\" class=\"control-label\"><b>{{ label }}</b></label>\n        <div id=\"{{id}}\" class=\"controls\" ng-transclude></div>\n      </div>"
+  };
+}
+
 // Part of app.js (included there.)
 
 
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
-function process_playswith_startup_data(scope, startup_data) {
-  var homepage = scope.homepage = (startup_data.homepage || {});
-  var projects = scope.projects = (startup_data.projects || []);
+function process_playswith_startup_data(startupData, startup_data) {
+  var homepage = startupData.homepage = (startup_data.homepage || {});
+  var projects = startupData.projects = (startup_data.projects || []);
   // Create a map of projects by id.
-  var projects_by_id = scope.projects_by_id = {};
+  var projects_by_id = startupData.projects_by_id = {};
   projects.forEach(function (project) {
       projects_by_id[project.id] = project;
     });
@@ -259,30 +269,66 @@ function process_playswith_startup_data(scope, startup_data) {
         }
         return projects_by_id[project_id];
       });
-    delete section.project_ids;
+    // delete section.project_ids;
     });
-  console.log("process_playswith_startup_data: Final scope = %O", scope);
+  console.log("process_playswith_startup_data: Final startupData = %O", startupData);
 }
 
 
-function load_playswith_startup_data(scope, $http, $q) {
-  var url = "/rpc/playswith_page.get_startup_data";
-  scope.homepage = $q.defer();
-  scope.projects = $q.defer();
-  $http({method: "POST", url: url, data: {} }).
+playsWith.controller("playswithRootController", function ($scope) {
+  $scope.type = "PLAYSWITH";
+});
+
+
+playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
+  $scope.startupData = playswithStartupData;
+});
+
+
+playsWith.factory("playswithStartupData", function ($http, $q) {
+    var url = "/rpc/playswith_page.get_startup_data";
+    var homepageDeferred = $q.defer();
+    var projectsDeferred = $q.defer();
+    var projectsByIdDeferred = $q.defer();
+    var startupData = {
+      homepage: homepageDeferred.promise,
+      projects: projectsDeferred.promise,
+      projects_by_id: projectsByIdDeferred.promise
+    };
+    $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
-          scope.status = status;
-          // scope.homepage.resolve(data.homepage);
-          // scope.projects.resolve(data.projects);
-          process_playswith_startup_data(scope, data);
+          process_playswith_startup_data(startupData, data);
+          startupData.homepageDeferred.resolve(data.homepage);
+          startupData.projectsDeferred.resolve(data.projects);
+          startupData.projectsByIdDeferred.resolve(data.projects_by_id);
         }).
       error(function(projects, status) {
-          scope.status = status;         
-          scope.homepage.reject(null);
-          scope.projects.reject(null);
+          startupData.homepageDeferred.reject(null);
+          startupData.projectsDeferred.reject(null);
+          startupData.projectsByIdDeferred.reject(null);
         });
-}
+    console.log("CKCK: playswithStartupData service is: %O", startupData);
+    return startupData;
+});
 
+
+directives.playswithSectionFormControl = function () {
+  console.log("directives.playswithSectionFormControl");
+  return {
+    restrict: "A",
+    scope: {
+      section: "="
+    },
+    controller: function ($scope, playswithStartupData) {
+      $scope.getProjectById = function (id) {
+        console.log("CKCK: getProjectById: playswithStartupData: %O, id: %O",
+                    playswithStartupData, id);
+        return playswithStartupData.projects_by_id[id];
+      };
+    },
+    template: "<div single-form-control-group id=\"section-title\" label=\"Title\">\n          <input ng-model=\"section.title\" type=\"text\" class=\"input-block-level\">\n        </div>\n        \n        <div ng-repeat=\"project_id in section.project_ids\">\n          <div single-form-control-group id=\"project-id\" label=\"Project\">\n            <input ng-model=\"project_id\" type=\"text\">\n            <div class=\"row\">\n              <div class=\"span4\" playswith-project-summary project=\"getProjectById(project_id)\"></div>\n            </div>\n          </div>\n        </div>"
+  };
+}
 
 
 directives.editPlayswithHomePage = function () {
@@ -291,9 +337,6 @@ directives.editPlayswithHomePage = function () {
     restrict: "A",
     scope: {
       homepage: "="
-    },
-    link: function($scope) {
-      console.log("editPlayswithHomePage: link: homepage = %O", $scope.homepage);
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
@@ -318,9 +361,10 @@ directives.editPlayswithHomePage = function () {
       }
     },
 
-    template: "TODO(chirayu): Form controls for editing the homepage"
+    template: "<form class=\"well form-horizontal\" novalidate method=\"post\" accept-charset=\"utf-8\">\n          <div single-form-control-group id=\"heading\" label=\"Page Heading\">\n            <input ng-model=\"homepage.title\" type=\"text\" class=\"input-block-level\"\n                   placeholder=\"Complimentary Libraries, Tools, and Techniques\">\n          </div>\n          <div single-form-control-group id=\"description\" label=\"Page Body\">\n            <textarea ng-model=\"homepage.description\"\n                      rows=8 class=\"input-block-level\">\n              {{homepage.description}}\n            </textarea>\n          </div>\n\n          \n          <div ng-repeat=\"section in homepage.sections\">\n            <div playswith-section-form-control section=\"section\"></div>\n          </div>\n\n        </form>"
   };
-}; // end editPlayswithHomePage directive.
+} // end editPlayswithHomePage directive.
+
 directives.playswithProjectSummary = function () {
   console.log("directives.playswithProjectSummary");
   return {

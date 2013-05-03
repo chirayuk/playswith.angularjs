@@ -18,10 +18,12 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <script type="text/javascript" charset="utf-8">
-    [[ get_file_contents("src/angular.min.js") ]]
+      (function() { [[ get_file_contents("src/jquery-1.9.1.min.js") ]] })();
+      (function() { [[ get_file_contents("src/angular.min.js") ]] })();
+      (function() { [[ get_file_contents("static/app.js") ]] })();
     {# [[ get_file_contents("src/angular-sanitize.min.js") ]] #}
   </script>
-  <script src="/static/app.js" type="text/javascript" charset="utf-8"></script>
+  {# <script src="/static/app.js" type="text/javascript" charset="utf-8"></script> #}
   <link rel="stylesheet" href="/static/app.css">
   {#
   [[ get_file_contents("src/script.min.js") ]]

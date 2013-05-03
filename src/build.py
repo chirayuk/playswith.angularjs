@@ -43,6 +43,7 @@ def build_all():
       (["src/css/bootstrap.min.css",
         "src/css/docs.css",
         "src/css/font-awesome.min.css",
+        "src/css/select2.css",
         "src/css/bwa.css",
         "src/app.css",
        ], "static/app.css"),

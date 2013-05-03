@@ -31,7 +31,6 @@ function load_project_requests($scope, $http) {
 
 
 // Main app module.
-{# var playsWith = angular.module('playsWith', ['ngSanitize']); #}
 var playsWith = angular.module('playsWith', []);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
@@ -42,16 +41,8 @@ playsWith.filter("utcTimestampToDate", function ($filter) {
 });
 
 
-playsWith.controller("playswithRootController", function ($scope) {
-  $scope.type = "PLAYSWITH";
-});
-
 playsWith.controller("builtwithRootController", function ($scope) {
   $scope.type = "BUILTWITH";
-});
-
-playsWith.controller("playswithHomepageController", function ($scope, $http, $q) {
-  load_playswith_startup_data($scope, $http, $q);
 });
 
 playsWith.controller("builtwithHomepageController", function ($scope, $http) {
@@ -67,8 +58,31 @@ playsWith.controller("projectRequestsController", function ($scope, $http) {
 
 var directives = playsWith.directives = {};
 
-{% include "src/playswith/playswith.js" with context -%}
+directives.singleFormControlGroup = function () {
+  console.log("directives.singleFormControlGroup");
+  return {
+    restrict: "A",
+    replace: true,
+    transclude: true,
+    scope: {
+      id: "@",
+      label: "@"
+    },
+    link: function (scope, elem, attrs) {
+      console.log("scope: %O, elem: %O, attrs: %O",
+                  scope, elem, attrs);
+      // attrs.$set("id", scope.id);
+    },
+    template: {% filter to_json -%}
+      <div class="control-group">
+        <label for="{{id}}" class="control-label"><b>{{ label }}</b></label>
+        <div id="{{id}}" class="controls" ng-transclude></div>
+      </div>
+      {%- endfilter %}
+  };
+}
 
+{% include "src/playswith/playswith.js" with context %}
 
 directives.playswithProjectSummary = function () {
   console.log("directives.playswithProjectSummary");

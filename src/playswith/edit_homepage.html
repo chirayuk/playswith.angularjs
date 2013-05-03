@@ -5,6 +5,8 @@
 {% block main_content %}
   <div ng-controller="playswithRootController">
     <h1>Edit the playswith homepage</h1>
-    <div edit-playswith-home-page></div>
+    <div class="row" ng-controller="playswithHomepageController">
+      <div edit-playswith-home-page homepage="startupData.homepage"></div>
+    </div>
   </div>
 {% endblock %}

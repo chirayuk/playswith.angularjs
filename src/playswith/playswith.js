@@ -3,11 +3,11 @@
 
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
-function process_playswith_startup_data(scope, startup_data) {
-  var homepage = scope.homepage = (startup_data.homepage || {});
-  var projects = scope.projects = (startup_data.projects || []);
+function process_playswith_startup_data(startupData, startup_data) {
+  var homepage = startupData.homepage = (startup_data.homepage || {});
+  var projects = startupData.projects = (startup_data.projects || []);
   // Create a map of projects by id.
-  var projects_by_id = scope.projects_by_id = {};
+  var projects_by_id = startupData.projects_by_id = {};
   projects.forEach(function (project) {
       projects_by_id[project.id] = project;
     });
@@ -20,30 +20,82 @@ function process_playswith_startup_data(scope, startup_data) {
         }
         return projects_by_id[project_id];
       });
-    delete section.project_ids;
+    // delete section.project_ids;
     });
-  console.log("process_playswith_startup_data: Final scope = %O", scope);
+  console.log("process_playswith_startup_data: Final startupData = %O", startupData);
 }
 
 
-function load_playswith_startup_data(scope, $http, $q) {
-  var url = "/rpc/playswith_page.get_startup_data";
-  scope.homepage = $q.defer();
-  scope.projects = $q.defer();
-  $http({method: "POST", url: url, data: {} }).
+playsWith.controller("playswithRootController", function ($scope) {
+  $scope.type = "PLAYSWITH";
+});
+
+
+playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
+  $scope.startupData = playswithStartupData;
+});
+
+
+playsWith.factory("playswithStartupData", function ($http, $q) {
+    var url = "/rpc/playswith_page.get_startup_data";
+    var homepageDeferred = $q.defer();
+    var projectsDeferred = $q.defer();
+    var projectsByIdDeferred = $q.defer();
+    var startupData = {
+      homepage: homepageDeferred.promise,
+      projects: projectsDeferred.promise,
+      projects_by_id: projectsByIdDeferred.promise
+    };
+    $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
-          scope.status = status;
-          // scope.homepage.resolve(data.homepage);
-          // scope.projects.resolve(data.projects);
-          process_playswith_startup_data(scope, data);
+          process_playswith_startup_data(startupData, data);
+          startupData.homepageDeferred.resolve(data.homepage);
+          startupData.projectsDeferred.resolve(data.projects);
+          startupData.projectsByIdDeferred.resolve(data.projects_by_id);
         }).
       error(function(projects, status) {
-          scope.status = status;         
-          scope.homepage.reject(null);
-          scope.projects.reject(null);
+          startupData.homepageDeferred.reject(null);
+          startupData.projectsDeferred.reject(null);
+          startupData.projectsByIdDeferred.reject(null);
         });
-}
+    console.log("CKCK: playswithStartupData service is: %O", startupData);
+    return startupData;
+});
 
+
+directives.playswithSectionFormControl = function () {
+  console.log("directives.playswithSectionFormControl");
+  return {
+    restrict: "A",
+    scope: {
+      section: "="
+    },
+    controller: function ($scope, playswithStartupData) {
+      $scope.getProjectById = function (id) {
+        console.log("CKCK: getProjectById: playswithStartupData: %O, id: %O",
+                    playswithStartupData, id);
+        return playswithStartupData.projects_by_id[id];
+      };
+    },
+    template: {% filter to_json -%}
+        <div single-form-control-group id="section-title" label="Title">
+          <input ng-model="section.title" type="text" class="input-block-level">
+        </div>
+        {# Not used.  Commented out.
+        <div single-form-control-group id="section-description" label="Description">
+          <input ng-model="section.description" type="text" class="input-block-level">
+        </div> #}
+        <div ng-repeat="project_id in section.project_ids">
+          <div single-form-control-group id="project-id" label="Project">
+            <input ng-model="project_id" type="text">
+            <div class="row">
+              <div class="span4" playswith-project-summary project="getProjectById(project_id)"></div>
+            </div>
+          </div>
+        </div>
+      {%- endfilter %}
+  };
+}
 
 
 directives.editPlayswithHomePage = function () {
@@ -52,9 +104,6 @@ directives.editPlayswithHomePage = function () {
     restrict: "A",
     scope: {
       homepage: "="
-    },
-    link: function($scope) {
-      console.log("editPlayswithHomePage: link: homepage = %O", $scope.homepage);
     },
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
@@ -80,8 +129,25 @@ directives.editPlayswithHomePage = function () {
     },
 
     template: {% filter to_json -%}
-          TODO(chirayu): Form controls for editing the homepage
+        <form class="well form-horizontal" novalidate method="post" accept-charset="utf-8">
+          <div single-form-control-group id="heading" label="Page Heading">
+            <input ng-model="homepage.title" type="text" class="input-block-level"
+                   placeholder="Complimentary Libraries, Tools, and Techniques">
+          </div>
+          <div single-form-control-group id="description" label="Page Body">
+            <textarea ng-model="homepage.description"
+                      rows=8 class="input-block-level">
+              {{homepage.description}}
+            </textarea>
+          </div>
+
+          {# Sections. #}
+          <div ng-repeat="section in homepage.sections">
+            <div playswith-section-form-control section="section"></div>
+          </div>
+
+        </form>
+
       {%- endfilter %}
   };
-}; // end editPlayswithHomePage directive.
-
+} // end editPlayswithHomePage directive.
