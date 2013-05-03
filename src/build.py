@@ -40,7 +40,7 @@ def build_all():
       ("src/builtwith/create.html", "static/builtwith/create.html"),
       ("src/builtwith/pending.html", "static/builtwith/pending.html"),
       # CSS
-      (["src/css/bootstrap.min.css",
+      (["src/css/bootstrap-combined.min.css",
         "src/css/docs.css",
         "src/css/font-awesome.min.css",
         "src/css/select2.css",

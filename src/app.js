@@ -31,7 +31,7 @@ function load_project_requests($scope, $http) {
 
 
 // Main app module.
-var playsWith = angular.module('playsWith', []);
+var playsWith = angular.module("playsWith", ["ui.select2"]);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
   return function (utctimestamp, format) {
@@ -68,11 +68,6 @@ directives.singleFormControlGroup = function () {
       id: "@",
       label: "@"
     },
-    link: function (scope, elem, attrs) {
-      console.log("scope: %O, elem: %O, attrs: %O",
-                  scope, elem, attrs);
-      // attrs.$set("id", scope.id);
-    },
     template: {% filter to_json -%}
       <div class="control-group">
         <label for="{{id}}" class="control-label"><b>{{ label }}</b></label>
@@ -99,9 +94,6 @@ directives.playswithProjectSummary = function () {
       {%- endfilter %},
     scope: {
       project: "="
-    },
-    link: function($scope) {
-      console.log("playswithProjectSummary: link: project = %O", $scope.project);
     }
   };
 };

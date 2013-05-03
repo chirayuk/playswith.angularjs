@@ -201,7 +201,7 @@ function load_project_requests($scope, $http) {
 
 
 // Main app module.
-var playsWith = angular.module('playsWith', []);
+var playsWith = angular.module("playsWith", ["ui.select2"]);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
   return function (utctimestamp, format) {
@@ -238,11 +238,6 @@ directives.singleFormControlGroup = function () {
       id: "@",
       label: "@"
     },
-    link: function (scope, elem, attrs) {
-      console.log("scope: %O, elem: %O, attrs: %O",
-                  scope, elem, attrs);
-      // attrs.$set("id", scope.id);
-    },
     template: "<div class=\"control-group\">\n        <label for=\"{{id}}\" class=\"control-label\"><b>{{ label }}</b></label>\n        <div id=\"{{id}}\" class=\"controls\" ng-transclude></div>\n      </div>"
   };
 }
@@ -252,9 +247,10 @@ directives.singleFormControlGroup = function () {
 
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
-function process_playswith_startup_data(startupData, startup_data) {
-  var homepage = startupData.homepage = (startup_data.homepage || {});
-  var projects = startupData.projects = (startup_data.projects || []);
+function process_playswith_startup_data(serverResult) {
+  var startupData = {};
+  var homepage = startupData.homepage = (serverResult.homepage || {});
+  var projects = startupData.projects = (serverResult.projects || []);
   // Create a map of projects by id.
   var projects_by_id = startupData.projects_by_id = {};
   projects.forEach(function (project) {
@@ -272,6 +268,7 @@ function process_playswith_startup_data(startupData, startup_data) {
     // delete section.project_ids;
     });
   console.log("process_playswith_startup_data: Final startupData = %O", startupData);
+  return startupData;
 }
 
 
@@ -297,19 +294,77 @@ playsWith.factory("playswithStartupData", function ($http, $q) {
     };
     $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
-          process_playswith_startup_data(startupData, data);
-          startupData.homepageDeferred.resolve(data.homepage);
-          startupData.projectsDeferred.resolve(data.projects);
-          startupData.projectsByIdDeferred.resolve(data.projects_by_id);
+          var resolvedStartupData = process_playswith_startup_data(data);
+          angular.copy(resolvedStartupData, startupData);
+          homepageDeferred.resolve(resolvedStartupData.homepage);
+          projectsDeferred.resolve(resolvedStartupData.projects);
+          projectsByIdDeferred.resolve(resolvedStartupData.projects_by_id);
         }).
       error(function(projects, status) {
-          startupData.homepageDeferred.reject(null);
-          startupData.projectsDeferred.reject(null);
-          startupData.projectsByIdDeferred.reject(null);
+          homepageDeferred.reject(null);
+          projectsDeferred.reject(null);
+          projectsByIdDeferred.reject(null);
         });
     console.log("CKCK: playswithStartupData service is: %O", startupData);
     return startupData;
 });
+
+
+directives.playswithProjectIdSelect = function (playswithStartupData) {
+  console.log("directives.playswithProjectIdSelect");
+  return {
+    restrict: "A",
+    controller: function ($scope) {
+      $scope.getProjectById = function (id) {
+        console.log("CKCK: getProjectById: id=%O", id);
+        return playswithStartupData.projects_by_id[id];
+      };
+    },
+    link: function (scope, elem, attrs) {
+      var projectToName = function (project) { return project.name; };
+      var makeSelect2 = function () {
+        elem.select2({
+            data: {
+              results: playswithStartupData.projects,
+              text: projectToName
+            },
+            formatSelection: projectToName,
+            formatResult: projectToName
+            });
+      }
+      if (playswithStartupData.projects.then) {
+        playswithStartupData.projects.then(makeSelect2);
+      } else {
+        makeSelect2();
+      }
+    }
+  };
+}
+
+
+directives.playswithSelectProject = function (playswithStartupData) {
+  console.log("directives.playswithSelectProject");
+  return {
+    restrict: "A",
+    scope: {
+      project: "=",
+      onRemove: "&"
+    },
+    controller: function ($scope, playswithStartupData) {
+      var projectToName = function (project) { return project.name; };
+      $scope.select2Data = {
+        data: {
+          results: playswithStartupData.projects,
+          text: projectToName
+        },
+        formatSelection: projectToName,
+        formatResult: projectToName
+        };
+    },
+
+    template: "<div single-form-control-group id=\"project\" label=\"Project\">\n          <input ui-select2=\"select2Data\" ng-model=\"project\" type=\"text\" style=\"width:200px\">\n          <button class=\"btn btn-link\" ng-click=\"onRemove()\">remove</button>\n          <div class=\"row\">\n            <div class=\"span4\" playswith-project-summary project=\"project\"></div>\n          </div>\n        </div>"
+  };
+}
 
 
 directives.playswithSectionFormControl = function () {
@@ -319,14 +374,13 @@ directives.playswithSectionFormControl = function () {
     scope: {
       section: "="
     },
-    controller: function ($scope, playswithStartupData) {
-      $scope.getProjectById = function (id) {
-        console.log("CKCK: getProjectById: playswithStartupData: %O, id: %O",
-                    playswithStartupData, id);
-        return playswithStartupData.projects_by_id[id];
+    controller: function ($scope) {
+      $scope.removeProjectAtIndex = function (index) {
+        $scope.section.projects.splice(index, 1);
       };
     },
-    template: "<div single-form-control-group id=\"section-title\" label=\"Title\">\n          <input ng-model=\"section.title\" type=\"text\" class=\"input-block-level\">\n        </div>\n        \n        <div ng-repeat=\"project_id in section.project_ids\">\n          <div single-form-control-group id=\"project-id\" label=\"Project\">\n            <input ng-model=\"project_id\" type=\"text\">\n            <div class=\"row\">\n              <div class=\"span4\" playswith-project-summary project=\"getProjectById(project_id)\"></div>\n            </div>\n          </div>\n        </div>"
+
+    template: "<div single-form-control-group id=\"section-title\" label=\"Title\">\n          <input ng-model=\"section.title\" type=\"text\" class=\"input-block-level\">\n        </div>\n        \n\n        <div ng-repeat=\"project in section.projects\">\n          <div playswith-select-project project=\"project\" on-remove=\"removeProjectAtIndex($index)\"></div>\n        </div>"
   };
 }
 
@@ -372,9 +426,6 @@ directives.playswithProjectSummary = function () {
     template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <span ng-show=\"project.tags\">\n          <br><span project-tags=\"project.tags\"></span>\n        </span>\n      </div>",
     scope: {
       project: "="
-    },
-    link: function($scope) {
-      console.log("playswithProjectSummary: link: project = %O", $scope.project);
     }
   };
 };

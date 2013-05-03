@@ -3,9 +3,10 @@
 
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
-function process_playswith_startup_data(startupData, startup_data) {
-  var homepage = startupData.homepage = (startup_data.homepage || {});
-  var projects = startupData.projects = (startup_data.projects || []);
+function process_playswith_startup_data(serverResult) {
+  var startupData = {};
+  var homepage = startupData.homepage = (serverResult.homepage || {});
+  var projects = startupData.projects = (serverResult.projects || []);
   // Create a map of projects by id.
   var projects_by_id = startupData.projects_by_id = {};
   projects.forEach(function (project) {
@@ -23,6 +24,7 @@ function process_playswith_startup_data(startupData, startup_data) {
     // delete section.project_ids;
     });
   console.log("process_playswith_startup_data: Final startupData = %O", startupData);
+  return startupData;
 }
 
 
@@ -48,19 +50,85 @@ playsWith.factory("playswithStartupData", function ($http, $q) {
     };
     $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
-          process_playswith_startup_data(startupData, data);
-          startupData.homepageDeferred.resolve(data.homepage);
-          startupData.projectsDeferred.resolve(data.projects);
-          startupData.projectsByIdDeferred.resolve(data.projects_by_id);
+          var resolvedStartupData = process_playswith_startup_data(data);
+          angular.copy(resolvedStartupData, startupData);
+          homepageDeferred.resolve(resolvedStartupData.homepage);
+          projectsDeferred.resolve(resolvedStartupData.projects);
+          projectsByIdDeferred.resolve(resolvedStartupData.projects_by_id);
         }).
       error(function(projects, status) {
-          startupData.homepageDeferred.reject(null);
-          startupData.projectsDeferred.reject(null);
-          startupData.projectsByIdDeferred.reject(null);
+          homepageDeferred.reject(null);
+          projectsDeferred.reject(null);
+          projectsByIdDeferred.reject(null);
         });
     console.log("CKCK: playswithStartupData service is: %O", startupData);
     return startupData;
 });
+
+
+directives.playswithProjectIdSelect = function (playswithStartupData) {
+  console.log("directives.playswithProjectIdSelect");
+  return {
+    restrict: "A",
+    controller: function ($scope) {
+      $scope.getProjectById = function (id) {
+        console.log("CKCK: getProjectById: id=%O", id);
+        return playswithStartupData.projects_by_id[id];
+      };
+    },
+    link: function (scope, elem, attrs) {
+      var projectToName = function (project) { return project.name; };
+      var makeSelect2 = function () {
+        elem.select2({
+            data: {
+              results: playswithStartupData.projects,
+              text: projectToName
+            },
+            formatSelection: projectToName,
+            formatResult: projectToName
+            });
+      }
+      if (playswithStartupData.projects.then) {
+        playswithStartupData.projects.then(makeSelect2);
+      } else {
+        makeSelect2();
+      }
+    }
+  };
+}
+
+
+directives.playswithSelectProject = function (playswithStartupData) {
+  console.log("directives.playswithSelectProject");
+  return {
+    restrict: "A",
+    scope: {
+      project: "=",
+      onRemove: "&"
+    },
+    controller: function ($scope, playswithStartupData) {
+      var projectToName = function (project) { return project.name; };
+      $scope.select2Data = {
+        data: {
+          results: playswithStartupData.projects,
+          text: projectToName
+        },
+        formatSelection: projectToName,
+        formatResult: projectToName
+        };
+    },
+
+    template: {% filter to_json -%}
+        <div single-form-control-group id="project" label="Project">
+          <input ui-select2="select2Data" ng-model="project" type="text" style="width:200px">
+          <button class="btn btn-link" ng-click="onRemove()">remove</button>
+          <div class="row">
+            <div class="span4" playswith-project-summary project="project"></div>
+          </div>
+        </div>
+    {%- endfilter %}
+  };
+}
 
 
 directives.playswithSectionFormControl = function () {
@@ -70,28 +138,24 @@ directives.playswithSectionFormControl = function () {
     scope: {
       section: "="
     },
-    controller: function ($scope, playswithStartupData) {
-      $scope.getProjectById = function (id) {
-        console.log("CKCK: getProjectById: playswithStartupData: %O, id: %O",
-                    playswithStartupData, id);
-        return playswithStartupData.projects_by_id[id];
+    controller: function ($scope) {
+      $scope.removeProjectAtIndex = function (index) {
+        $scope.section.projects.splice(index, 1);
       };
     },
+
     template: {% filter to_json -%}
         <div single-form-control-group id="section-title" label="Title">
           <input ng-model="section.title" type="text" class="input-block-level">
         </div>
         {# Not used.  Commented out.
-        <div single-form-control-group id="section-description" label="Description">
-          <input ng-model="section.description" type="text" class="input-block-level">
-        </div> #}
-        <div ng-repeat="project_id in section.project_ids">
-          <div single-form-control-group id="project-id" label="Project">
-            <input ng-model="project_id" type="text">
-            <div class="row">
-              <div class="span4" playswith-project-summary project="getProjectById(project_id)"></div>
-            </div>
+          <div single-form-control-group id="section-description" label="Description">
+            <input ng-model="section.description" type="text" class="input-block-level">
           </div>
+        #}
+
+        <div ng-repeat="project in section.projects">
+          <div playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
         </div>
       {%- endfilter %}
   };
