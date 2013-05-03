@@ -195,21 +195,25 @@ directives.editPlayswithHomePage = function () {
     template: {% filter to_json -%}
         <form class="well form-horizontal" novalidate method="post" accept-charset="utf-8">
           <div single-form-control-group id="heading" label="Page Heading">
-            <input ng-model="homepage.title" type="text" class="input-block-level"
-                   placeholder="Complimentary Libraries, Tools, and Techniques">
+            <span contentEditable="true" ng-model="homepage.title" title="Click to edit page heading" class="input-block-level">{{homepage.title}}</span>
           </div>
           <div single-form-control-group id="description" label="Page Body">
-            <textarea ng-model="homepage.description"
-                      rows=8 class="input-block-level">
-              {{homepage.description}}
-            </textarea>
+              <div contentEditable="true" ng-model="homepage.description" title="Click to edit">{{homepage.description}}</div>
           </div>
 
           {# Sections. #}
-          <div ng-repeat="section in homepage.sections">
-            <div playswith-section-form-control section="section"></div>
+          <div ng-switch on="homepage.sections.length">
+            <div ng-switch-when="0">
+              TODO(chirayu): Add link to create a new section.
+            </div>
+            <div ng-switch-default>
+              <div ng-repeat="section in homepage.sections">
+                <hr>
+                <h4>Section</h4>
+                <div playswith-section-form-control section="section"></div>
+              </div>
+            </div>
           </div>
-
         </form>
 
       {%- endfilter %}

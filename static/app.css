@@ -1823,3 +1823,8 @@ img.AngularJS-large {
   text-align: right;
   font-weight: bold;
 }
+
+div[contentEditable], span[contentEditable] {
+  cursor: pointer;
+  background-color: #FFFFFF;
+}
