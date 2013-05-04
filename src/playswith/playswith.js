@@ -96,7 +96,7 @@ directives.playswithSelectProject = function (playswithStartupData) {
     },
 
     template: {% filter to_json -%}
-        <div style="display: inline-block; float: left;" class="span4">
+        <div style="display: inline-block" class="span4">
             <input ui-select2="select2Data" ng-model="projectCopy" type="hidden" style="width:280px" class="input-large">
         <button class="btn btn-link" ng-click="onRemove()">remove</button><br><br>
         {# <div style="height: 300px" playswith-project-summary project="project"></div> #}
@@ -125,7 +125,7 @@ directives.playswithSectionFormControl = function () {
 
     template: {% filter to_json -%}
         <div class="row">
-          <h1><div style="width: auto; padding-bottom: .1em;" contenteditable="true" ng-model="section.title" title="Click to edit" class="span12"></div>
+          <h1><div style="width: auto; display: inline-block; padding-bottom: .1em;" contenteditable="true" ng-model="section.title" title="Click to edit" class="span12"></div>
           <small class="btn btn-link" ng-click="onRemove()">remove</small></h1>
         </div>
         {# Not used.  Commented out.
@@ -134,8 +134,8 @@ directives.playswithSectionFormControl = function () {
           </div>
         #}
         <div class="row">
-          <div ng-repeat="project in section.projects">
-            <div style="display: inline-block; float: left;" playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
+          <div style="display:inline-block; vertical-align: top" ng-repeat="project in section.projects">
+            <div style="display: inline-block" playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
           </div>
         </div>
       {%- endfilter %}
