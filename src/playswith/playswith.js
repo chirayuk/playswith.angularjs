@@ -23,6 +23,7 @@ function process_playswith_startup_data(serverResult) {
         return projects_by_id[project_id];
       });
     });
+  startupData.project_ids = Object.keys(startupData.projects_by_id);
   console.log("process_playswith_startup_data: Final startupData = %O", startupData);
   return startupData;
 }
@@ -74,7 +75,13 @@ directives.playswithSelectProject = function (playswithStartupData) {
       onRemove: "&"
     },
     controller: function ($scope, playswithStartupData) {
+      var projectCopy = {};
+      angular.copy($scope.project, projectCopy);
+      $scope.project.project = projectCopy;
+
       var projectToName = function (project) { return project.name; };
+      var projectIdToName = function (project_id) { return playswithStartupData.projects_by_id[project_id].name; };
+
       $scope.select2Data = {
         data: {
           results: playswithStartupData.projects,
@@ -88,7 +95,7 @@ directives.playswithSelectProject = function (playswithStartupData) {
 
     template: {% filter to_json -%}
         <div class="span4">
-            <input ui-select2="select2Data" ng-model="project" type="hidden" style="width:280px" class="input-large">
+            <input ui-select2="select2Data" ng-model="project.project" type="hidden" style="width:280px" class="input-large">
         <button class="btn btn-link" ng-click="onRemove()">remove</button><br><br>
         {# <div style="height: 300px" playswith-project-summary project="project"></div> #}
         <div style="color: grey" ng-bind-html-unsafe="project.description"></div>
@@ -108,6 +115,7 @@ directives.playswithSectionFormControl = function () {
       onRemove: "&"
     },
     controller: function ($scope) {
+      console.log("CKCK: section = %O", $scope.section);
       $scope.removeProjectAtIndex = function (index) {
         $scope.section.projects.splice(index, 1);
       };
@@ -115,7 +123,7 @@ directives.playswithSectionFormControl = function () {
 
     template: {% filter to_json -%}
         <div class="row">
-          <h1><span style="width: auto" contentEditable="true" ng-model="section.title" title="Click to edit" class="span12" >{{section.title}}</span>
+          <h1><div style="width: auto; padding-bottom: .1em;" contenteditable="true" ng-model="section.title" title="Click to edit" class="span12"></div>
           <small class="btn btn-link" ng-click="onRemove()">remove</small></h1>
         </div>
         {# Not used.  Commented out.
@@ -148,17 +156,27 @@ directives.editPlayswithHomePage = function () {
         $scope.homepage.sections.splice(index, 1);
       };
 
+      var getCleanHomepage = function (index) {
+        var cleanHomepage = {};
+        console.log("Saving:  $scope is %O", $scope);
+        angular.copy($scope.homepage, cleanHomepage);
+        cleanHomepage.sections.forEach(function (section) {
+          section.project_ids = section.projects.map(
+              function (project) {return project.id});
+          delete section.projects;
+        });
+        return cleanHomepage;
+      };
+
       $scope.saveChanges = function() {
         var url = "/rpc/playswith_page.update_homepage";
         console.log("editPlayswithHomePage: saveChanges: homepage = %O", $scope.homepage);
         $scope.submit_disabled = true;
         $scope.in_progress = true;
-        $http({method: "POST", url: url, data: $scope.homepage }).
+        $http({method: "POST", url: url, data: getCleanHomepage() }).
             success(function(data, status) {
                 $scope.submit_disabled = false;
                 $scope.in_progress = false;
-                angular.copy(data, $scope.homepage);
-                $scope.onUpdate();
               }).
             error(function(data, status) {
                 $scope.submit_disabled = false;
@@ -168,20 +186,21 @@ directives.editPlayswithHomePage = function () {
     },
 
     template: {% filter to_json -%}
-          <h1 contentEditable="true" ng-model="homepage.title" title="Click to edit page heading">{{homepage.title}}</h1>
-          <div contentEditable="true" ng-model="homepage.description" title="Click to edit">{{homepage.description}}</div>
+        <div ng-click="saveChanges()" class="btn btn-primary">Save</div>
+        <h1 contenteditable="true" ng-model="homepage.title" title="Click to edit page heading"></h1>
+        <div contenteditable="true" ng-model="homepage.description" title="Click to edit"></div>
 
-          {# Sections. #}
-          <div ng-switch on="homepage.sections.length">
-            <div ng-switch-when="0">
-              TODO(chirayu): Add link to create a new section.
-            </div>
-            <div ng-switch-default>
-              <div ng-repeat="section in homepage.sections">
-                <div playswith-section-form-control section="section" on-remove="removeSectionAtIndex($index)"></div>
-              </div>
+        {# Sections. #}
+        <div ng-switch on="homepage.sections.length">
+          <div ng-switch-when="0">
+            TODO(chirayu): Add link to create a new section.
+          </div>
+          <div ng-switch-default>
+            <div ng-repeat="section in homepage.sections">
+              <div playswith-section-form-control section="section" on-remove="removeSectionAtIndex($index)"></div>
             </div>
           </div>
+        </div>
 
       {%- endfilter %}
   };

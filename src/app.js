@@ -7,6 +7,26 @@
 (function() { // app.js begins.
 
 
+angular.module('contenteditable-binding', []).directive('contenteditable', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      // view -> model
+      elm.bind('blur', function() {
+        scope.$apply(function() {
+          ctrl.$setViewValue(elm.html());
+        });
+      });
+ 
+      // model -> view
+      ctrl.$render = function() {
+        elm.html(ctrl.$viewValue);
+      };
+    }
+  };
+});
+
+
 function load_projects($scope, $http) {
   var url = "/rpc/project.get_project_list";
   $http({method: "POST", url: url, data: {type: $scope.type} }).
@@ -38,7 +58,7 @@ function load_project_requests($scope, $http) {
 
 
 // Main app module.
-var playsWith = angular.module("playsWith", ["ui.select2"]);
+var playsWith = angular.module("playsWith", ["contenteditable-binding", "ui.select2"]);
 
 playsWith.filter("utcTimestampToDate", function ($filter) {
   return function (utctimestamp, format) {

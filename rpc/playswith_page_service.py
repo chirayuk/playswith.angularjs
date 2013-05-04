@@ -34,6 +34,11 @@ def get_homepage_expanded_model():
   key = ndb.Key(playswith_model.HomePageExpandedModel, key_ids.PLAYSWITH_HOMEPAGE_ID)
   return key.get()
 
+def update_homepage(homepage):
+  key = ndb.Key(playswith_model.HomePageModel, key_ids.PLAYSWITH_HOMEPAGE_ID)
+  homepage_model = playswith_model.HomePageModel(msg=homepage, key=key)
+  homepage_model.put()
+
 
 def expand_section(section):
   # Inline the projects by fetching them from the db.
@@ -70,3 +75,10 @@ class PlayswithPageService(remote.Service):
     projects = project_service.get_project_list(
         type=models.Project.Type.PLAYSWITH).projects
     return playswith_model.StartupData(homepage=homepage, projects=projects)
+
+  @remote.method(playswith_model.HomePage, playswith_model.HomePage)
+  def update_homepage(self, request):
+    # TODO(chirayu): validation & sanitization.
+    update_homepage(request)
+    return request
+
