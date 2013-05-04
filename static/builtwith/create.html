@@ -525,9 +525,11 @@ directives.playswithSelectProject = function (playswithStartupData) {
       onRemove: "&"
     },
     controller: function ($scope, playswithStartupData) {
-      var projectCopy = {};
-      angular.copy($scope.project, projectCopy);
-      $scope.project.project = projectCopy;
+      $scope.projectCopy = {};
+      angular.copy($scope.project, $scope.projectCopy);
+      $scope.$watch("projectCopy", function (newValue, oldValue) {
+        angular.copy($scope.projectCopy, $scope.project);
+      });
 
       var projectToName = function (project) { return project.name; };
       var projectIdToName = function (project_id) { return playswithStartupData.projects_by_id[project_id].name; };
@@ -543,7 +545,7 @@ directives.playswithSelectProject = function (playswithStartupData) {
         };
     },
 
-    template: "<div class=\"span4\">\n            <input ui-select2=\"select2Data\" ng-model=\"project.project\" type=\"hidden\" style=\"width:280px\" class=\"input-large\">\n        <button class=\"btn btn-link\" ng-click=\"onRemove()\">remove</button><br><br>\n        \n        <div style=\"color: grey\" ng-bind-html-unsafe=\"project.description\"></div>\n        <br><br>\n        </div>"
+    template: "<div style=\"display: inline-block; float: left;\" class=\"span4\">\n            <input ui-select2=\"select2Data\" ng-model=\"projectCopy\" type=\"hidden\" style=\"width:280px\" class=\"input-large\">\n        <button class=\"btn btn-link\" ng-click=\"onRemove()\">remove</button><br><br>\n        \n        <div style=\"display: inline-block; color: grey\" ng-bind-html-unsafe=\"project.description\"></div>\n        <br><br>\n        </div>"
   };
 }
 
@@ -563,7 +565,7 @@ directives.playswithSectionFormControl = function () {
       };
     },
 
-    template: "<div class=\"row\">\n          <h1><div style=\"width: auto; padding-bottom: .1em;\" contenteditable=\"true\" ng-model=\"section.title\" title=\"Click to edit\" class=\"span12\"></div>\n          <small class=\"btn btn-link\" ng-click=\"onRemove()\">remove</small></h1>\n        </div>\n        \n        <div class=\"row\">\n          <div ng-repeat=\"project in section.projects\">\n            <div playswith-select-project project=\"project\" on-remove=\"removeProjectAtIndex($index)\"></div>\n          </div>\n        </div>"
+    template: "<div class=\"row\">\n          <h1><div style=\"width: auto; padding-bottom: .1em;\" contenteditable=\"true\" ng-model=\"section.title\" title=\"Click to edit\" class=\"span12\"></div>\n          <small class=\"btn btn-link\" ng-click=\"onRemove()\">remove</small></h1>\n        </div>\n        \n        <div class=\"row\">\n          <div ng-repeat=\"project in section.projects\">\n            <div style=\"display: inline-block; float: left;\" playswith-select-project project=\"project\" on-remove=\"removeProjectAtIndex($index)\"></div>\n          </div>\n        </div>"
   };
 }
 

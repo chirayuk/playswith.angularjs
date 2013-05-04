@@ -75,9 +75,11 @@ directives.playswithSelectProject = function (playswithStartupData) {
       onRemove: "&"
     },
     controller: function ($scope, playswithStartupData) {
-      var projectCopy = {};
-      angular.copy($scope.project, projectCopy);
-      $scope.project.project = projectCopy;
+      $scope.projectCopy = {};
+      angular.copy($scope.project, $scope.projectCopy);
+      $scope.$watch("projectCopy", function (newValue, oldValue) {
+        angular.copy($scope.projectCopy, $scope.project);
+      });
 
       var projectToName = function (project) { return project.name; };
       var projectIdToName = function (project_id) { return playswithStartupData.projects_by_id[project_id].name; };
@@ -94,11 +96,11 @@ directives.playswithSelectProject = function (playswithStartupData) {
     },
 
     template: {% filter to_json -%}
-        <div class="span4">
-            <input ui-select2="select2Data" ng-model="project.project" type="hidden" style="width:280px" class="input-large">
+        <div style="display: inline-block; float: left;" class="span4">
+            <input ui-select2="select2Data" ng-model="projectCopy" type="hidden" style="width:280px" class="input-large">
         <button class="btn btn-link" ng-click="onRemove()">remove</button><br><br>
         {# <div style="height: 300px" playswith-project-summary project="project"></div> #}
-        <div style="color: grey" ng-bind-html-unsafe="project.description"></div>
+        <div style="display: inline-block; color: grey" ng-bind-html-unsafe="project.description"></div>
         <br><br>
         </div>
     {%- endfilter %}
@@ -133,7 +135,7 @@ directives.playswithSectionFormControl = function () {
         #}
         <div class="row">
           <div ng-repeat="project in section.projects">
-            <div playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
+            <div style="display: inline-block; float: left;" playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
           </div>
         </div>
       {%- endfilter %}
