@@ -1,5 +1,6 @@
-// Part of app.js (included there.)
+// Part of and included by app.js
 
+var PAGE_TYPE = "PLAYSWITH";
 
 // TODO(chirayu):  These functions need to go into a class or directive instead
 // of being spread out like this.
@@ -21,7 +22,6 @@ function process_playswith_startup_data(serverResult) {
         }
         return projects_by_id[project_id];
       });
-    // delete section.project_ids;
     });
   console.log("process_playswith_startup_data: Final startupData = %O", startupData);
   return startupData;
@@ -29,7 +29,7 @@ function process_playswith_startup_data(serverResult) {
 
 
 playsWith.controller("playswithRootController", function ($scope) {
-  $scope.type = "PLAYSWITH";
+  $scope.type = PAGE_TYPE;
 });
 
 
@@ -61,41 +61,8 @@ playsWith.factory("playswithStartupData", function ($http, $q) {
           projectsDeferred.reject(null);
           projectsByIdDeferred.reject(null);
         });
-    console.log("CKCK: playswithStartupData service is: %O", startupData);
     return startupData;
 });
-
-
-directives.playswithProjectIdSelect = function (playswithStartupData) {
-  console.log("directives.playswithProjectIdSelect");
-  return {
-    restrict: "A",
-    controller: function ($scope) {
-      $scope.getProjectById = function (id) {
-        console.log("CKCK: getProjectById: id=%O", id);
-        return playswithStartupData.projects_by_id[id];
-      };
-    },
-    link: function (scope, elem, attrs) {
-      var projectToName = function (project) { return project.name; };
-      var makeSelect2 = function () {
-        elem.select2({
-            data: {
-              results: playswithStartupData.projects,
-              text: projectToName
-            },
-            formatSelection: projectToName,
-            formatResult: projectToName
-            });
-      }
-      if (playswithStartupData.projects.then) {
-        playswithStartupData.projects.then(makeSelect2);
-      } else {
-        makeSelect2();
-      }
-    }
-  };
-}
 
 
 directives.playswithSelectProject = function (playswithStartupData) {
@@ -114,17 +81,18 @@ directives.playswithSelectProject = function (playswithStartupData) {
           text: projectToName
         },
         formatSelection: projectToName,
-        formatResult: projectToName
+        formatResult: projectToName,
+        containerCssClass: "projectSelect2"
         };
     },
 
     template: {% filter to_json -%}
-        <div single-form-control-group id="project" label="Project">
-          <input ui-select2="select2Data" ng-model="project" type="text" style="width:200px">
-          <button class="btn btn-link" ng-click="onRemove()">remove</button>
-          <div class="row">
-            <div class="span4" playswith-project-summary project="project"></div>
-          </div>
+        <div class="span4">
+            <input ui-select2="select2Data" ng-model="project" type="hidden" style="width:280px" class="input-large">
+        <button class="btn btn-link" ng-click="onRemove()">remove</button><br><br>
+        {# <div style="height: 300px" playswith-project-summary project="project"></div> #}
+        <div style="color: grey" ng-bind-html-unsafe="project.description"></div>
+        <br><br>
         </div>
     {%- endfilter %}
   };
@@ -136,7 +104,8 @@ directives.playswithSectionFormControl = function () {
   return {
     restrict: "A",
     scope: {
-      section: "="
+      section: "=",
+      onRemove: "&"
     },
     controller: function ($scope) {
       $scope.removeProjectAtIndex = function (index) {
@@ -145,17 +114,19 @@ directives.playswithSectionFormControl = function () {
     },
 
     template: {% filter to_json -%}
-        <div single-form-control-group id="section-title" label="Title">
-          <input ng-model="section.title" type="text" class="input-block-level">
+        <div class="row">
+          <h1><span style="width: auto" contentEditable="true" ng-model="section.title" title="Click to edit" class="span12" >{{section.title}}</span>
+          <small class="btn btn-link" ng-click="onRemove()">remove</small></h1>
         </div>
         {# Not used.  Commented out.
           <div single-form-control-group id="section-description" label="Description">
             <input ng-model="section.description" type="text" class="input-block-level">
           </div>
         #}
-
-        <div ng-repeat="project in section.projects">
-          <div playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
+        <div class="row">
+          <div ng-repeat="project in section.projects">
+            <div playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
+          </div>
         </div>
       {%- endfilter %}
   };
@@ -172,6 +143,10 @@ directives.editPlayswithHomePage = function () {
     controller: function ($scope, $http) {
       $scope.submit_disabled = false;
       $scope.in_progress = false;
+
+      $scope.removeSectionAtIndex = function (index) {
+        $scope.homepage.sections.splice(index, 1);
+      };
 
       $scope.saveChanges = function() {
         var url = "/rpc/playswith_page.update_homepage";
@@ -193,13 +168,8 @@ directives.editPlayswithHomePage = function () {
     },
 
     template: {% filter to_json -%}
-        <form class="well form-horizontal" novalidate method="post" accept-charset="utf-8">
-          <div single-form-control-group id="heading" label="Page Heading">
-            <span contentEditable="true" ng-model="homepage.title" title="Click to edit page heading" class="input-block-level">{{homepage.title}}</span>
-          </div>
-          <div single-form-control-group id="description" label="Page Body">
-              <div contentEditable="true" ng-model="homepage.description" title="Click to edit">{{homepage.description}}</div>
-          </div>
+          <h1 contentEditable="true" ng-model="homepage.title" title="Click to edit page heading">{{homepage.title}}</h1>
+          <div contentEditable="true" ng-model="homepage.description" title="Click to edit">{{homepage.description}}</div>
 
           {# Sections. #}
           <div ng-switch on="homepage.sections.length">
@@ -208,14 +178,48 @@ directives.editPlayswithHomePage = function () {
             </div>
             <div ng-switch-default>
               <div ng-repeat="section in homepage.sections">
-                <hr>
-                <h4>Section</h4>
-                <div playswith-section-form-control section="section"></div>
+                <div playswith-section-form-control section="section" on-remove="removeSectionAtIndex($index)"></div>
               </div>
             </div>
           </div>
-        </form>
 
       {%- endfilter %}
   };
 } // end editPlayswithHomePage directive.
+
+
+
+directives.playswithHomepage = function (playswithStartupData) {
+  console.log("directives.playswithHomepage");
+  return {
+    restrict: "A",
+    scope: {},
+    controller: function ($scope) {
+      $scope.type = PAGE_TYPE;
+      $scope.homepage = playswithStartupData.homepage;
+    },
+    template: {% filter to_json -%}
+      <div class="row">
+        <h1>{{homepage.title}}</h1>
+        <p ng-show="homepage.description">{{homepage.description}}</p>
+        <br>
+        <a class="btn btn-large" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
+        <a class="btn btn-large" href="/playswith/pending">See submissions</a>
+        <a class="btn btn-large" href="/playswith/edit_homepage">Edit the homepage</a>
+      </div>
+        <div ng-repeat="section in homepage.sections">
+          <div class="row">
+            <h1>{{section.title}}</h1>
+            <p ng-show="section.description">{{section.description}}</p>
+          </div>
+          <div class="row">
+            <div class="span4" ng-repeat="project in section.projects">
+              <div style="height: 300px" playswith-project-summary project="project"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endfilter %}
+  };
+}
+

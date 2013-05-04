@@ -8,7 +8,33 @@
   font-weight: bold;
 }
 
-div[contentEditable], span[contentEditable] {
+*[contentEditable] {
   cursor: pointer;
+  padding: 2px;
+  border: 1px solid transparent;
+}
+
+*[contentEditable]:hover {
   background-color: #FFFFFF;
+}
+
+.container .no_margin_top {
+  margin-top: 0px;
+}
+
+// select2 styling for project-id lookup.
+
+.projectSelect2.select2-container .select-choice {
+  height: 3em;
+}
+
+.projectSelect2.select2-container a.select2-choice {
+  height: 3em;
+}
+
+.projectSelect2.select2-container a.select2-choice span {
+  padding-top: 0.25em;
+  height: 2em;
+  font-size: 2em;
+  font-weight: bold;
 }

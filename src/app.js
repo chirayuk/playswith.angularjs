@@ -1,5 +1,12 @@
 {% import "src/utils.jinja" as utils -%}
 
+(function() { [[ get_file_contents("src/jquery-1.9.1.min.js") ]] })();
+(function() { [[ get_file_contents("src/select2.min.js") ]] })();
+(function() { [[ get_file_contents("src/angular.min.js") ]] })();
+(function() { [[ get_file_contents("src/angular-select2.js") ]] })();
+(function() { // app.js begins.
+
+
 function load_projects($scope, $http) {
   var url = "/rpc/project.get_project_list";
   $http({method: "POST", url: url, data: {type: $scope.type} }).
@@ -496,7 +503,7 @@ directives.projectRequestWithEdit = function () {
 };
 
 
-
-
-
 playsWith.directive(directives);
+
+
+})();  // End of app.js

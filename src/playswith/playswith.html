@@ -3,21 +3,5 @@
 {% block title %}Plays with AngularJS{% endblock %}
 
 {% block main_content %}
-  <div ng-controller="playswithRootController">
-    <div class="row" ng-controller="playswithHomepageController">
-      <h1>{{startupData.homepage.title}}</h1>
-      <p ng-show="startupData.homepage.description">{{startupData.homepage.description}}</p>
-      <br>
-      <a class="btn btn-large" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
-      <a class="btn btn-large" href="/playswith/pending">See submissions</a>
-      <a class="btn btn-large" href="/playswith/edit_homepage">Edit the homepage</a>
-      <div class="clearfix" ng-repeat="section in startupData.homepage.sections">
-        <h1>{{section.title}}</h1>
-        <p ng-show="section.description">{{section.description}}</p>
-        <div ng-repeat="project in section.projects">
-          <div class="span4" project-summary type="type" project="project"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div playswith-homepage></div>
 {% endblock %}

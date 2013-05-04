@@ -25,9 +25,6 @@ def render_templates_to_file(template_fnames, target_fname):
 def build_all():
   # Render src files.
   for (srcs, target) in (
-      (["src/angular.min.js",
-        "src/app.js",
-       ], "static/all.js"),
       ("src/app.js", "static/app.js"),
       ("src/index.html", "index.html"),
       # playswith
@@ -40,7 +37,7 @@ def build_all():
       ("src/builtwith/create.html", "static/builtwith/create.html"),
       ("src/builtwith/pending.html", "static/builtwith/pending.html"),
       # CSS
-      (["src/css/bootstrap-combined.min.css",
+      (["src/css/bootstrap.min.css",
         "src/css/docs.css",
         "src/css/font-awesome.min.css",
         "src/css/select2.css",
