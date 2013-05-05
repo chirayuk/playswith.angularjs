@@ -32,6 +32,7 @@ def build_all():
       ("src/playswith/create.html", "static/playswith/create.html"),
       ("src/playswith/pending.html", "static/playswith/pending.html"),
       ("src/playswith/edit_homepage.html", "static/playswith/edit_homepage.html"),
+      ("src/playswith/search.html", "static/playswith/search.html"),
       # builtwith
       ("src/builtwith/builtwith.html", "static/builtwith/index.html"),
       ("src/builtwith/create.html", "static/builtwith/create.html"),

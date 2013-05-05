@@ -247,29 +247,74 @@ directives.playswithHomepage = function (playswithStartupData) {
     scope: {},
     controller: function ($scope) {
       $scope.type = PAGE_TYPE;
-      $scope.homepage = playswithStartupData.homepage;
+      $scope.ready = false;
+      playswithStartupData.ready.then(function() {
+        $scope.homepage = playswithStartupData.homepage;
+        $scope.ready = true;
+      });
     },
     template: {% filter to_json -%}
-      <div>
-        <h1>{{homepage.title}}</h1>
-        <p ng-show="homepage.description">{{homepage.description}}</p>
-        <br>
-        <a class="btn btn-large btn-link" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
-        <a class="btn btn-large btn-link" href="/playswith/pending">See submissions</a>
-        <a class="btn btn-large btn-link" href="/playswith/edit_homepage">Edit the homepage</a>
-      </div>
-        <div ng-repeat="section in homepage.sections">
-          <div>
-            <h1>{{section.title}}</h1>
-            <p ng-show="section.description">{{section.description}}</p>
-          </div>
-          <div class="row inline-block-container">
-            <div ng-repeat="project in section.projects">
-              <div playswith-project-summary project="project"></div>
+      <div ng-switch on="ready">
+        <div ng-switch-when="false">
+          Loading ... <i class="icon-spinner icon-spin"></i>
+        </div>
+        <div ng-switch-when="true">
+          <h1>{{homepage.title}}</h1>
+          <p ng-show="homepage.description">{{homepage.description}}</p>
+          <br>
+          <a class="btn btn-large btn-link" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
+          <a class="btn btn-large btn-link" href="/playswith/pending">See submissions</a>
+          <a class="btn btn-large btn-link" href="/playswith/edit_homepage">Edit the homepage</a>
+        </div>
+          <div ng-repeat="section in homepage.sections">
+            <div>
+              <h1>{{section.title}}</h1>
+              <p ng-show="section.description">{{section.description}}</p>
+            </div>
+            <div class="row inline-block-container">
+              <div ng-repeat="project in section.projects">
+                <div playswith-project-summary project="project"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    {%- endfilter %}
+  };
+}
+
+
+directives.playswithSearch = function (playswithStartupData) {
+  console.log("directives.playswithSearch");
+  return {
+    restrict: "A",
+    scope: {},
+    controller: function ($scope) {
+      $scope.type = PAGE_TYPE;
+      $scope.ready = false;
+      playswithStartupData.ready.then(function() {
+        $scope.homepage = playswithStartupData.homepage;
+        $scope.ready = true;
+      });
+
+      $scope.select2Data = {
+        data: {
+          results: [{id:"one_id", text: "one"}, {id:"two_id", text: "two"}],
+        }
+      };
+    },
+
+    template: {% filter to_json -%}
+      <div ng-switch on="ready">
+        <div ng-switch-when="false">
+          Loading ... <i class="icon-spinner icon-spin"></i>
+        </div>
+
+        <div ng-switch-when="true">
+            <input type="text" class="input-large search-query" placeholder="Search" ng-model="query" ng-change="search()">
+            <input ui-select2="select2Data" multiple ng-model="project.tags" type="hidden" style="width:280px" class="input-large">
+        </div>
+
     {%- endfilter %}
   };
 }

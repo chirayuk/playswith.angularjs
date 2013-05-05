@@ -620,9 +620,38 @@ directives.playswithHomepage = function (playswithStartupData) {
     scope: {},
     controller: function ($scope) {
       $scope.type = PAGE_TYPE;
-      $scope.homepage = playswithStartupData.homepage;
+      $scope.ready = false;
+      playswithStartupData.ready.then(function() {
+        $scope.homepage = playswithStartupData.homepage;
+        $scope.ready = true;
+      });
     },
-    template: "<div>\n        <h1>{{homepage.title}}</h1>\n        <p ng-show=\"homepage.description\">{{homepage.description}}</p>\n        <br>\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/create\">Submit a project</a>&nbsp;&nbsp;\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/pending\">See submissions</a>\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/edit_homepage\">Edit the homepage</a>\n      </div>\n        <div ng-repeat=\"section in homepage.sections\">\n          <div>\n            <h1>{{section.title}}</h1>\n            <p ng-show=\"section.description\">{{section.description}}</p>\n          </div>\n          <div class=\"row inline-block-container\">\n            <div ng-repeat=\"project in section.projects\">\n              <div playswith-project-summary project=\"project\"></div>\n            </div>\n          </div>\n        </div>\n      </div>"
+    template: "<div ng-switch on=\"ready\">\n        <div ng-switch-when=\"false\">\n          Loading ... <i class=\"icon-spinner icon-spin\"></i>\n        </div>\n        <div ng-switch-when=\"true\">\n          <h1>{{homepage.title}}</h1>\n          <p ng-show=\"homepage.description\">{{homepage.description}}</p>\n          <br>\n          <a class=\"btn btn-large btn-link\" href=\"/playswith/create\">Submit a project</a>&nbsp;&nbsp;\n          <a class=\"btn btn-large btn-link\" href=\"/playswith/pending\">See submissions</a>\n          <a class=\"btn btn-large btn-link\" href=\"/playswith/edit_homepage\">Edit the homepage</a>\n        </div>\n          <div ng-repeat=\"section in homepage.sections\">\n            <div>\n              <h1>{{section.title}}</h1>\n              <p ng-show=\"section.description\">{{section.description}}</p>\n            </div>\n            <div class=\"row inline-block-container\">\n              <div ng-repeat=\"project in section.projects\">\n                <div playswith-project-summary project=\"project\"></div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>"
+  };
+}
+
+
+directives.playswithSearch = function (playswithStartupData) {
+  console.log("directives.playswithSearch");
+  return {
+    restrict: "A",
+    scope: {},
+    controller: function ($scope) {
+      $scope.type = PAGE_TYPE;
+      $scope.ready = false;
+      playswithStartupData.ready.then(function() {
+        $scope.homepage = playswithStartupData.homepage;
+        $scope.ready = true;
+      });
+
+      $scope.select2Data = {
+        data: {
+          results: [{id:"one_id", text: "one"}, {id:"two_id", text: "two"}],
+        }
+      };
+    },
+
+    template: "<div ng-switch on=\"ready\">\n        <div ng-switch-when=\"false\">\n          Loading ... <i class=\"icon-spinner icon-spin\"></i>\n        </div>\n\n        <div ng-switch-when=\"true\">\n            <input type=\"text\" class=\"input-large search-query\" placeholder=\"Search\" ng-model=\"query\" ng-change=\"search()\">\n            <input ui-select2=\"select2Data\" multiple ng-model=\"project.tags\" type=\"hidden\" style=\"width:280px\" class=\"input-large\">\n        </div>"
   };
 }
 
