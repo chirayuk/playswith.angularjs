@@ -2,6 +2,10 @@
   display: none;
 }
 
+.inline-block-container div {
+  display: inline-block;
+  vertical-align: top;
+}
 
 .pwa-item-label {
   text-align: right;
@@ -33,8 +37,8 @@
 }
 
 .projectSelect2.select2-container a.select2-choice span {
-  padding-top: 0.25em;
-  height: 2em;
-  font-size: 2em;
+  padding-top: 0.37em;
+  height: 1.5em;
+  font-size: 1.5em;
   font-weight: bold;
 }

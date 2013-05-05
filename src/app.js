@@ -14,13 +14,13 @@ angular.module('contenteditable-binding', []).directive('contenteditable', funct
       // view -> model
       elm.bind('blur', function() {
         scope.$apply(function() {
-          ctrl.$setViewValue(elm.html());
+          ctrl.$setViewValue(elm.text());
         });
       });
  
       // model -> view
       ctrl.$render = function() {
-        elm.html(ctrl.$viewValue);
+        elm.text(ctrl.$viewValue);
       };
     }
   };
@@ -105,26 +105,6 @@ directives.singleFormControlGroup = function () {
 }
 
 {% include "src/playswith/playswith.js" with context %}
-
-directives.playswithProjectSummary = function () {
-  console.log("directives.playswithProjectSummary");
-  return {
-    restrict: "A",
-    template: {% filter to_json -%}
-      <div>
-        <h3>{{project.name}}</h3>
-        <div ng-bind-html-unsafe="project.description"></div>
-        <span ng-show="project.tags">
-          <br><span project-tags="project.tags"></span>
-        </span>
-      </div>
-      {%- endfilter %},
-    scope: {
-      project: "="
-    }
-  };
-};
-
 
 directives.builtwithProjectSummary = function () {
   console.log("directives.builtwithProjectSummary");

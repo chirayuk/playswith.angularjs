@@ -343,13 +343,13 @@ angular.module('contenteditable-binding', []).directive('contenteditable', funct
       // view -> model
       elm.bind('blur', function() {
         scope.$apply(function() {
-          ctrl.$setViewValue(elm.html());
+          ctrl.$setViewValue(elm.text());
         });
       });
  
       // model -> view
       ctrl.$render = function() {
-        elm.html(ctrl.$viewValue);
+        elm.text(ctrl.$viewValue);
       };
     }
   };
@@ -459,16 +459,6 @@ function process_playswith_startup_data(serverResult) {
 }
 
 
-playsWith.controller("playswithRootController", function ($scope) {
-  $scope.type = PAGE_TYPE;
-});
-
-
-playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
-  $scope.startupData = playswithStartupData;
-});
-
-
 playsWith.factory("playswithStartupData", function ($http, $q) {
     var url = "/rpc/playswith_page.get_startup_data";
     var homepageDeferred = $q.defer();
@@ -494,6 +484,29 @@ playsWith.factory("playswithStartupData", function ($http, $q) {
         });
     return startupData;
 });
+
+
+playsWith.controller("playswithRootController", function ($scope) {
+  $scope.type = PAGE_TYPE;
+});
+
+
+playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
+  $scope.startupData = playswithStartupData;
+});
+
+
+directives.playswithProjectSummary = function () {
+  console.log("directives.playswithProjectSummary");
+  return {
+    restrict: "A",
+    template: "<div class=\"span4\">\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        \n      </div>",
+    scope: {
+      project: "="
+    }
+  };
+};
+
 
 
 directives.playswithSelectProject = function (playswithStartupData) {
@@ -525,7 +538,7 @@ directives.playswithSelectProject = function (playswithStartupData) {
         };
     },
 
-    template: "<div style=\"display: inline-block\" class=\"span4\">\n            <input ui-select2=\"select2Data\" ng-model=\"projectCopy\" type=\"hidden\" style=\"width:280px\" class=\"input-large\">\n        <button class=\"btn btn-link\" ng-click=\"onRemove()\">remove</button><br><br>\n        \n        <div style=\"display: inline-block; color: grey\" ng-bind-html-unsafe=\"project.description\"></div>\n        <br><br>\n        </div>"
+    template: "<div class=\"span4\">\n            <input ui-select2=\"select2Data\" ng-model=\"projectCopy\" type=\"hidden\" style=\"width:280px\" class=\"input-large\">\n        <button class=\"btn btn-link\" ng-click=\"onRemove()\">remove</button><br><br>\n        \n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <br><br>\n        </div>"
   };
 }
 
@@ -545,12 +558,12 @@ directives.playswithSectionFormControl = function () {
       };
     },
 
-    template: "<div class=\"row\">\n          <h1><div style=\"width: auto; display: inline-block; padding-bottom: .1em;\" contenteditable=\"true\" ng-model=\"section.title\" title=\"Click to edit\" class=\"span12\"></div>\n          <small class=\"btn btn-link\" ng-click=\"onRemove()\">remove</small></h1>\n        </div>\n        \n        <div class=\"row\">\n          <div style=\"display:inline-block; vertical-align: top\" ng-repeat=\"project in section.projects\">\n            <div style=\"display: inline-block\" playswith-select-project project=\"project\" on-remove=\"removeProjectAtIndex($index)\"></div>\n          </div>\n        </div>"
+    template: "<div class=\"row\">\n          <h1><div style=\"width: auto; padding-bottom: .1em;\" contenteditable=\"true\" ng-model=\"section.title\" title=\"Click to edit\" class=\"span12\"></div>\n          <small class=\"btn btn-link\" ng-click=\"onRemove()\">remove</small></h1>\n        </div>\n        \n        <div class=\"row inline-block-container\">\n          <div ng-repeat=\"project in section.projects\">\n            <div playswith-select-project project=\"project\" on-remove=\"removeProjectAtIndex($index)\"></div>\n          </div>\n        </div>"
   };
 }
 
 
-directives.editPlayswithHomePage = function () {
+directives.editPlayswithHomePage = function ($window) {
   console.log("directives.editPlayswithHomePage");
   return {
     restrict: "A",
@@ -586,6 +599,7 @@ directives.editPlayswithHomePage = function () {
             success(function(data, status) {
                 $scope.submit_disabled = false;
                 $scope.in_progress = false;
+                $window.location.href = "/playswith";
               }).
             error(function(data, status) {
                 $scope.submit_disabled = false;
@@ -594,7 +608,7 @@ directives.editPlayswithHomePage = function () {
       }
     },
 
-    template: "<div ng-click=\"saveChanges()\" class=\"btn btn-primary\">Save</div>\n        <h1 contenteditable=\"true\" ng-model=\"homepage.title\" title=\"Click to edit page heading\"></h1>\n        <div contenteditable=\"true\" ng-model=\"homepage.description\" title=\"Click to edit\"></div>\n\n        \n        <div ng-switch on=\"homepage.sections.length\">\n          <div ng-switch-when=\"0\">\n            TODO(chirayu): Add link to create a new section.\n          </div>\n          <div ng-switch-default>\n            <div ng-repeat=\"section in homepage.sections\">\n              <div playswith-section-form-control section=\"section\" on-remove=\"removeSectionAtIndex($index)\"></div>\n            </div>\n          </div>\n        </div>"
+    template: "<div ng-click=\"saveChanges()\" class=\"btn btn-primary btn-large\">Save changes and update homepage</div>\n        <h1 contenteditable=\"true\" ng-model=\"homepage.title\" title=\"Click to edit page heading\"></h1>\n        <div contenteditable=\"true\" ng-model=\"homepage.description\" title=\"Click to edit\"></div>\n\n        \n        <div ng-switch on=\"homepage.sections.length\">\n          <div ng-switch-when=\"0\">\n            TODO(chirayu): Add link to create a new section.\n          </div>\n          <div ng-switch-default>\n            <div ng-repeat=\"section in homepage.sections\">\n              <div playswith-section-form-control section=\"section\" on-remove=\"removeSectionAtIndex($index)\"></div>\n            </div>\n          </div>\n        </div>"
   };
 } // end editPlayswithHomePage directive.
 
@@ -609,21 +623,9 @@ directives.playswithHomepage = function (playswithStartupData) {
       $scope.type = PAGE_TYPE;
       $scope.homepage = playswithStartupData.homepage;
     },
-    template: "<div class=\"row\">\n        <h1>{{homepage.title}}</h1>\n        <p ng-show=\"homepage.description\">{{homepage.description}}</p>\n        <br>\n        <a class=\"btn btn-large\" href=\"/playswith/create\">Submit a project</a>&nbsp;&nbsp;\n        <a class=\"btn btn-large\" href=\"/playswith/pending\">See submissions</a>\n        <a class=\"btn btn-large\" href=\"/playswith/edit_homepage\">Edit the homepage</a>\n      </div>\n        <div ng-repeat=\"section in homepage.sections\">\n          <div class=\"row\">\n            <h1>{{section.title}}</h1>\n            <p ng-show=\"section.description\">{{section.description}}</p>\n          </div>\n          <div class=\"row\">\n            <div class=\"span4\" ng-repeat=\"project in section.projects\">\n              <div style=\"height: 300px\" playswith-project-summary project=\"project\"></div>\n            </div>\n          </div>\n        </div>\n      </div>"
+    template: "<div>\n        <h1>{{homepage.title}}</h1>\n        <p ng-show=\"homepage.description\">{{homepage.description}}</p>\n        <br>\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/create\">Submit a project</a>&nbsp;&nbsp;\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/pending\">See submissions</a>\n        <a class=\"btn btn-large btn-link\" href=\"/playswith/edit_homepage\">Edit the homepage</a>\n      </div>\n        <div ng-repeat=\"section in homepage.sections\">\n          <div>\n            <h1>{{section.title}}</h1>\n            <p ng-show=\"section.description\">{{section.description}}</p>\n          </div>\n          <div class=\"row inline-block-container\">\n            <div ng-repeat=\"project in section.projects\">\n              <div playswith-project-summary project=\"project\"></div>\n            </div>\n          </div>\n        </div>\n      </div>"
   };
 }
-
-
-directives.playswithProjectSummary = function () {
-  console.log("directives.playswithProjectSummary");
-  return {
-    restrict: "A",
-    template: "<div>\n        <h3>{{project.name}}</h3>\n        <div ng-bind-html-unsafe=\"project.description\"></div>\n        <span ng-show=\"project.tags\">\n          <br><span project-tags=\"project.tags\"></span>\n        </span>\n      </div>",
-    scope: {
-      project: "="
-    }
-  };
-};
 
 
 directives.builtwithProjectSummary = function () {

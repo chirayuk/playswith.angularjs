@@ -29,16 +29,6 @@ function process_playswith_startup_data(serverResult) {
 }
 
 
-playsWith.controller("playswithRootController", function ($scope) {
-  $scope.type = PAGE_TYPE;
-});
-
-
-playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
-  $scope.startupData = playswithStartupData;
-});
-
-
 playsWith.factory("playswithStartupData", function ($http, $q) {
     var url = "/rpc/playswith_page.get_startup_data";
     var homepageDeferred = $q.defer();
@@ -64,6 +54,37 @@ playsWith.factory("playswithStartupData", function ($http, $q) {
         });
     return startupData;
 });
+
+
+playsWith.controller("playswithRootController", function ($scope) {
+  $scope.type = PAGE_TYPE;
+});
+
+
+playsWith.controller("playswithHomepageController", function ($scope, playswithStartupData) {
+  $scope.startupData = playswithStartupData;
+});
+
+
+directives.playswithProjectSummary = function () {
+  console.log("directives.playswithProjectSummary");
+  return {
+    restrict: "A",
+    template: {% filter to_json -%}
+      <div class="span4">
+        <h3>{{project.name}}</h3>
+        <div ng-bind-html-unsafe="project.description"></div>
+        {# <span ng-show="project.tags">
+          <br><span project-tags="project.tags"></span>
+        </span> #}
+      </div>
+      {%- endfilter %},
+    scope: {
+      project: "="
+    }
+  };
+};
+
 
 
 directives.playswithSelectProject = function (playswithStartupData) {
@@ -96,11 +117,11 @@ directives.playswithSelectProject = function (playswithStartupData) {
     },
 
     template: {% filter to_json -%}
-        <div style="display: inline-block" class="span4">
+        <div class="span4">
             <input ui-select2="select2Data" ng-model="projectCopy" type="hidden" style="width:280px" class="input-large">
         <button class="btn btn-link" ng-click="onRemove()">remove</button><br><br>
         {# <div style="height: 300px" playswith-project-summary project="project"></div> #}
-        <div style="display: inline-block; color: grey" ng-bind-html-unsafe="project.description"></div>
+        <div ng-bind-html-unsafe="project.description"></div>
         <br><br>
         </div>
     {%- endfilter %}
@@ -125,7 +146,7 @@ directives.playswithSectionFormControl = function () {
 
     template: {% filter to_json -%}
         <div class="row">
-          <h1><div style="width: auto; display: inline-block; padding-bottom: .1em;" contenteditable="true" ng-model="section.title" title="Click to edit" class="span12"></div>
+          <h1><div style="width: auto; padding-bottom: .1em;" contenteditable="true" ng-model="section.title" title="Click to edit" class="span12"></div>
           <small class="btn btn-link" ng-click="onRemove()">remove</small></h1>
         </div>
         {# Not used.  Commented out.
@@ -133,9 +154,9 @@ directives.playswithSectionFormControl = function () {
             <input ng-model="section.description" type="text" class="input-block-level">
           </div>
         #}
-        <div class="row">
-          <div style="display:inline-block; vertical-align: top" ng-repeat="project in section.projects">
-            <div style="display: inline-block" playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
+        <div class="row inline-block-container">
+          <div ng-repeat="project in section.projects">
+            <div playswith-select-project project="project" on-remove="removeProjectAtIndex($index)"></div>
           </div>
         </div>
       {%- endfilter %}
@@ -143,7 +164,7 @@ directives.playswithSectionFormControl = function () {
 }
 
 
-directives.editPlayswithHomePage = function () {
+directives.editPlayswithHomePage = function ($window) {
   console.log("directives.editPlayswithHomePage");
   return {
     restrict: "A",
@@ -179,6 +200,7 @@ directives.editPlayswithHomePage = function () {
             success(function(data, status) {
                 $scope.submit_disabled = false;
                 $scope.in_progress = false;
+                $window.location.href = "/playswith";
               }).
             error(function(data, status) {
                 $scope.submit_disabled = false;
@@ -188,7 +210,7 @@ directives.editPlayswithHomePage = function () {
     },
 
     template: {% filter to_json -%}
-        <div ng-click="saveChanges()" class="btn btn-primary">Save</div>
+        <div ng-click="saveChanges()" class="btn btn-primary btn-large">Save changes and update homepage</div>
         <h1 contenteditable="true" ng-model="homepage.title" title="Click to edit page heading"></h1>
         <div contenteditable="true" ng-model="homepage.description" title="Click to edit"></div>
 
@@ -220,22 +242,22 @@ directives.playswithHomepage = function (playswithStartupData) {
       $scope.homepage = playswithStartupData.homepage;
     },
     template: {% filter to_json -%}
-      <div class="row">
+      <div>
         <h1>{{homepage.title}}</h1>
         <p ng-show="homepage.description">{{homepage.description}}</p>
         <br>
-        <a class="btn btn-large" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
-        <a class="btn btn-large" href="/playswith/pending">See submissions</a>
-        <a class="btn btn-large" href="/playswith/edit_homepage">Edit the homepage</a>
+        <a class="btn btn-large btn-link" href="/playswith/create">Submit a project</a>&nbsp;&nbsp;
+        <a class="btn btn-large btn-link" href="/playswith/pending">See submissions</a>
+        <a class="btn btn-large btn-link" href="/playswith/edit_homepage">Edit the homepage</a>
       </div>
         <div ng-repeat="section in homepage.sections">
-          <div class="row">
+          <div>
             <h1>{{section.title}}</h1>
             <p ng-show="section.description">{{section.description}}</p>
           </div>
-          <div class="row">
-            <div class="span4" ng-repeat="project in section.projects">
-              <div style="height: 300px" playswith-project-summary project="project"></div>
+          <div class="row inline-block-container">
+            <div ng-repeat="project in section.projects">
+              <div playswith-project-summary project="project"></div>
             </div>
           </div>
         </div>
