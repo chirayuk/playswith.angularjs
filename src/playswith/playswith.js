@@ -31,26 +31,22 @@ function process_playswith_startup_data(serverResult) {
 
 playsWith.factory("playswithStartupData", function ($http, $q) {
     var url = "/rpc/playswith_page.get_startup_data";
-    var homepageDeferred = $q.defer();
-    var projectsDeferred = $q.defer();
-    var projectsByIdDeferred = $q.defer();
+    var deferred = $q.defer();
     var startupData = {
-      homepage: homepageDeferred.promise,
-      projects: projectsDeferred.promise,
-      projects_by_id: projectsByIdDeferred.promise
+      ready: deferred.promise,
+      homepage: null,
+      projects: null,
+      projects_by_id: null
     };
     $http({method: "POST", url: url, data: {} }).
       success(function(data, status) {
           var resolvedStartupData = process_playswith_startup_data(data);
           angular.copy(resolvedStartupData, startupData);
-          homepageDeferred.resolve(resolvedStartupData.homepage);
-          projectsDeferred.resolve(resolvedStartupData.projects);
-          projectsByIdDeferred.resolve(resolvedStartupData.projects_by_id);
+          startupData.ready = deferred.promise;
+          deferred.resolve(true);
         }).
       error(function(projects, status) {
-          homepageDeferred.reject(null);
-          projectsDeferred.reject(null);
-          projectsByIdDeferred.reject(null);
+          deferred.reject(false);
         });
     return startupData;
 });
@@ -170,7 +166,11 @@ directives.editPlayswithHomePage = function (playswithStartupData, $window) {
     restrict: "A",
     scope: {},
     controller: function ($scope, $http) {
-      $scope.homepage = playswithStartupData.homepage;
+      $scope.ready = false;
+      playswithStartupData.ready.then(function() {
+        $scope.homepage = playswithStartupData.homepage;
+        $scope.ready = true;
+      });
       $scope.submit_disabled = false;
       $scope.in_progress = false;
 
@@ -178,7 +178,7 @@ directives.editPlayswithHomePage = function (playswithStartupData, $window) {
         $scope.homepage.sections.splice(index, 1);
       };
 
-      var getCleanHomepage = function (index) {
+      var getCleanHomepage = function () {
         var cleanHomepage = {};
         console.log("Saving:  $scope is %O", $scope);
         angular.copy($scope.homepage, cleanHomepage);
@@ -209,20 +209,29 @@ directives.editPlayswithHomePage = function (playswithStartupData, $window) {
     },
 
     template: {% filter to_json -%}
-        <div ng-click="saveChanges()" class="btn btn-primary btn-large">Save changes and update homepage</div>
-        <h1 contenteditable="true" ng-model="homepage.title" title="Click to edit page heading"></h1>
-        <div contenteditable="true" ng-model="homepage.description" title="Click to edit"></div>
+        <div ng-switch on="ready">
+        <div ng-switch-when="false">
+          Loading ... <i class="icon-spinner icon-spin"></i>
+        </div>
+        <div ng-switch-when="true">
+          <div class="alert alert-info"><b>Tip:</b> Click on an item to edit.</div>
+          <br>
+          <div ng-click="saveChanges()" class="btn btn-primary btn-large">Save changes and update homepage</div>
+          <h1 contenteditable="true" ng-model="homepage.title" title="Click to edit page heading"></h1>
+          <div contenteditable="true" ng-model="homepage.description" title="Click to edit"></div>
 
-        {# Sections. #}
-        <div ng-switch on="homepage.sections.length">
-          <div ng-switch-when="0">
-            TODO(chirayu): Add link to create a new section.
-          </div>
-          <div ng-switch-default>
-            <div ng-repeat="section in homepage.sections">
-              <div playswith-section-form-control section="section" on-remove="removeSectionAtIndex($index)"></div>
+          {# Sections. #}
+          <div ng-switch on="homepage.sections.length">
+            <div ng-switch-when="0">
+              TODO(chirayu): Add link to create a new section.
+            </div>
+            <div ng-switch-default>
+              <div ng-repeat="section in homepage.sections">
+                <div playswith-section-form-control section="section" on-remove="removeSectionAtIndex($index)"></div>
+              </div>
             </div>
           </div>
+        </div>
         </div>
 
       {%- endfilter %}
