@@ -164,14 +164,13 @@ directives.playswithSectionFormControl = function () {
 }
 
 
-directives.editPlayswithHomePage = function ($window) {
+directives.editPlayswithHomePage = function (playswithStartupData, $window) {
   console.log("directives.editPlayswithHomePage");
   return {
     restrict: "A",
-    scope: {
-      homepage: "="
-    },
+    scope: {},
     controller: function ($scope, $http) {
+      $scope.homepage = playswithStartupData.homepage;
       $scope.submit_disabled = false;
       $scope.in_progress = false;
 

@@ -583,14 +583,13 @@ directives.playswithSectionFormControl = function () {
 }
 
 
-directives.editPlayswithHomePage = function ($window) {
+directives.editPlayswithHomePage = function (playswithStartupData, $window) {
   console.log("directives.editPlayswithHomePage");
   return {
     restrict: "A",
-    scope: {
-      homepage: "="
-    },
+    scope: {},
     controller: function ($scope, $http) {
+      $scope.homepage = playswithStartupData.homepage;
       $scope.submit_disabled = false;
       $scope.in_progress = false;
 
@@ -943,8 +942,8 @@ playsWith.directive(directives);
   <div ng-controller="playswithRootController">
     <div class="alert alert-info"><b>Tip:</b> Click on an item to edit.</div>
     <br>
-    <div class="row" ng-controller="playswithHomepageController">
-      <div edit-playswith-home-page homepage="startupData.homepage"></div>
+    <div class="row">
+      <div edit-playswith-home-page></div>
     </div>
   </div>
 
