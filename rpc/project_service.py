@@ -25,8 +25,12 @@ class Error(Exception):
 
 
 def get_project_request_by_id(project_request_id):
-    key = ndb.Key(models.ProjectRequestModel, project_request_id)
-    return key.get()
+  try:
+    project_request_id = int(project_request_id)
+  except ValueError:
+    pass
+  key = ndb.Key(models.ProjectRequestModel, project_request_id)
+  return key.get()
 
 
 def get_project_list(type):
